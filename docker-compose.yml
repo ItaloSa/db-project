@@ -1,0 +1,10 @@
+version: '2'
+services:
+
+  app:
+    image: ambientum/php:7.0-apache
+    container_name: app
+    volumes:
+      - .:/var/www/app/public
+    ports:
+      - "8090:8080"
