@@ -2,6 +2,8 @@
 
 namespace app\posto;
 
+use app\bandeira\Bandeira as Bandeira;
+
 class Posto {
     private $cnpj;
     private $razaoSocial;
@@ -10,6 +12,7 @@ class Posto {
     private $longitude;
     private $endereco;
     private $telefone;
+    private $bandeira;
 
     public function __construct() {
 
@@ -70,4 +73,13 @@ class Posto {
     public function setTelefone(string $telefone): void {
         $this->telefone = $telefone;
     }
+
+    public function getBandeira(): Bandeira {
+        return $this->bandeira;
+    }
+
+    public function setBandeira(Bandeira $bandeira): void {
+        $this->bandeira = $bandeira;
+    }
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\posto;
+namespace app\bandeira;
 
 class Bandeira {
     private $nome;
@@ -14,7 +14,7 @@ class Bandeira {
         return $this->nome;
     }
 
-    public function setNome(string $nome): void {
+    public function setNome(string $nome) {
         $this->nome = $nome;
     }
 
@@ -22,7 +22,12 @@ class Bandeira {
         return $this->url;
     }
 
-    public function setUrl(string $url): void{
+    public function setUrl(string $url){
         $this->url = $url;
     }
+
+    public function json() {
+        return get_object_vars($this);
+    }
+
 }
