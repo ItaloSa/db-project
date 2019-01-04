@@ -11,7 +11,16 @@ use Dotenv\Dotenv as Dotenv;
 $dotenv = Dotenv::create(__DIR__);
 $dotenv->load();
 
-$app = new \Slim\App;
+$settings = [];
+if (getenv('ENV') != 'production') {
+    $settings = [
+        'settings' => [
+            'displayErrorDetails' => true,
+        ],
+    ];
+}
+
+$app = new \Slim\App($settings);
 
 $router = new Router($app);
 
