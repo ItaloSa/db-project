@@ -7,6 +7,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \Exception as Exception;
 
 use app\bandeira\BandeiraRouter as BandeiraRouter;
+use app\endereco\EnderecoRouter as EnderecoRouter;
 class Router {
     private $app;
 
@@ -14,6 +15,7 @@ class Router {
         $this->app = $app;
         $this->root();
         $this->bandeira();
+        $this->endereco();
     }
 
     private function root() {
@@ -26,6 +28,10 @@ class Router {
 
     private function bandeira() {
         $bandeiraRouter = new BandeiraRouter($this->app);
+    }
+
+    private function endereco() {
+        $enderecoRouter = new EnderecoRouter($this->app);
     }
 
 } 
