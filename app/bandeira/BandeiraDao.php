@@ -44,4 +44,20 @@ class BandeiraDao {
             }
             return $stmt->fetchObject('app\bandeira\Bandeira');
     }
+
+    public function delete(Bandeira $bandeira) {
+        $sql = "
+            DELETE FROM bandeira
+            WHERE nome = :nome
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $bandeira->getNome());
+        $stmt->execute();
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+    }
+    
 }
