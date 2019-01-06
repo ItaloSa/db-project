@@ -41,4 +41,21 @@ class EnderecoDao {
 
     }
 
+    public function getCidade(Cidade $cidade) {
+        $sql = "
+            SELECT * FROM cidade
+            WHERE nome = :nome
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $cidade->getNome());
+
+        $stmt->execute();
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+        return $stmt->fetchObject('app\endereco\Cidade');
+    }
+
 }

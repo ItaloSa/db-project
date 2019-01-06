@@ -14,6 +14,7 @@ class EnderecoRouter {
     public function __construct(\Slim\App $app) {
         $this->app = $app;
         $this->post();
+        $this->get();
     }
 
     private function post() {
@@ -29,4 +30,23 @@ class EnderecoRouter {
             });
         });
     }
+
+    private function get() {
+        $this->app->group('/cidades', function () {
+            $this->get('/{nome}', function (Request $request, Response $response, array $args) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $cidade = $enderecoCtrl->getCidade($args['nome']);
+                    return $response->withJson($cidade->json(), 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+    }
+
 }
