@@ -39,7 +39,11 @@ class BandeiraRouter {
                     $bandeira = $bandeiraCtrl->get($args['nome']);
                     return $response->withJson($bandeira->json(), 200);
                 } catch (Exception $e) {
-                    return $response->withJson(["Error" => $e->getMessage()], 400);
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
                 }
             });
         });
