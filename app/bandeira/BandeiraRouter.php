@@ -34,6 +34,19 @@ class BandeiraRouter {
 
     private function get() {
         $this->app->group('/bandeiras', function () {
+            $this->get('', function (Request $request, Response $response, array $args) {
+                $bandeiraCtrl = new BandeiraCtrl();
+                try {
+                    $bandeiras = $bandeiraCtrl->getAll();
+                    return $response->withJson($bandeiras, 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
             $this->get('/{nome}', function (Request $request, Response $response, array $args) {
                 $bandeiraCtrl = new BandeiraCtrl();
                 try {

@@ -45,6 +45,21 @@ class BandeiraDao {
         return $stmt->fetchObject('app\bandeira\Bandeira');
     }
 
+    public function getAll() {
+        $sql = "
+            SELECT * FROM bandeira
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\bandeira\Bandeira');
+    }
+
     public function delete(Bandeira $bandeira) {
         $sql = "
             DELETE FROM bandeira

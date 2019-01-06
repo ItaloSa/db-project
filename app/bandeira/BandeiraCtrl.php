@@ -61,6 +61,25 @@ class BandeiraCtrl {
 
     }
 
+    public function getAll(): array {
+        try {
+            $bandeiraDao = new BandeiraDao();
+            $result = $bandeiraDao->getAll();
+            if (sizeof($result) > 0) {
+                $bandeiras = [];
+                foreach($result as $bandeira) {
+                    $bandeiras[] = $bandeira->json();
+                }
+                return $bandeiras;
+            } else {
+                throw new Exception("Nothing found", 404);
+            }
+        } catch (Exception $e ) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Problems with Database");
+        }
+    }
+
     public function delete($nome) {
         if ($nome == null) {
             throw new Exception("Data can't be empty");
