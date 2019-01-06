@@ -27,8 +27,12 @@ class BandeiraCtrl {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
-            Monolog\Registry::log()->error('BandeiraDao', $e);
-            throw new Exception("Problems with Database");
+            if ($e->getCode() == "23000") {
+                throw new Exception("Duplicate entry");
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
         }
 
     }
@@ -50,7 +54,7 @@ class BandeiraCtrl {
             if ($e->getCode() == 404) {
                 throw new Exception($e->getMessage(), $e->getCode());
             } else {
-                Monolog\Registry::log()->error('BandeiraDao', $e);
+                Registry::log()->error($e->getMessage());
                 throw new Exception("Problems with Database");
             }
         }
