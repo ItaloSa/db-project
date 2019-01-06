@@ -18,7 +18,7 @@ class BandeiraRouter {
     }
 
     private function post() {
-        $this->app->group('/bandeira', function () {
+        $this->app->group('/bandeiras', function () {
             $this->post('', function (Request $request, Response $response) {
                 $bandeiraCtrl = new BandeiraCtrl();
                 try {
@@ -32,9 +32,15 @@ class BandeiraRouter {
     }
 
     private function get() {
-        $this->app->group('/bandeira', function () {
-            $this->get('', function (Request $request, Response $response, array $args) {
-                return $response->withJson(['message'=> 'Hello Bandeira'], 200);
+        $this->app->group('/bandeiras', function () {
+            $this->get('/{nome}', function (Request $request, Response $response, array $args) {
+                $bandeiraCtrl = new BandeiraCtrl();
+                try {
+                    $bandeira = $bandeiraCtrl->get($args['nome']);
+                    return $response->withJson($bandeira->json(), 200);
+                } catch (Exception $e) {
+                    return $response->withJson(["Error" => $e->getMessage()], 400);
+                }
             });
         });
     }
