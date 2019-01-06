@@ -30,19 +30,19 @@ class BandeiraDao {
     }
 
     public function get(Bandeira $bandeira) {
-            $sql = "
-                SELECT * FROM bandeira
-                WHERE nome = :nome
-            ";
+        $sql = "
+            SELECT * FROM bandeira
+            WHERE nome = :nome
+        ";
 
-            $dataBase = DataBase::getInstance();
-            $stmt = $dataBase->prepare($sql);
-            $stmt->bindValue(':nome', $bandeira->getNome());
-            $stmt->execute();
-            if ($stmt->rowCount() < 1) {
-                throw new Exception("Not found", 404);
-            }
-            return $stmt->fetchObject('app\bandeira\Bandeira');
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $bandeira->getNome());
+        $stmt->execute();
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+        return $stmt->fetchObject('app\bandeira\Bandeira');
     }
 
     public function delete(Bandeira $bandeira) {
