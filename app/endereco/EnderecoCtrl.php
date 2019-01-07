@@ -81,4 +81,28 @@ class EnderecoCtrl {
         }
     }
 
+    public function delete($nome) {
+        if ($nome == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $cidade = new Cidade();
+            $cidade->setNome($nome);
+            $enderecoDao = new EnderecoDao();
+            return $enderecoDao->deleteCidade($cidade);
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+
+    }
+
 }

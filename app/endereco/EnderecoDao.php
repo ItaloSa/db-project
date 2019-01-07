@@ -73,4 +73,19 @@ class EnderecoDao {
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\endereco\Cidade');
     }
 
+    public function deleteCidade(Cidade $cidade) {
+        $sql = "
+            DELETE FROM cidade
+            WHERE nome = :nome
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $cidade->getNome());
+        $stmt->execute();
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+    }
+
 }

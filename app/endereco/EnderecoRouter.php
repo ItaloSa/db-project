@@ -15,6 +15,7 @@ class EnderecoRouter {
         $this->app = $app;
         $this->post();
         $this->get();
+        $this->delete();
     }
 
     private function post() {
@@ -51,6 +52,24 @@ class EnderecoRouter {
                 try {
                     $cidade = $enderecoCtrl->getCidade($args['nome']);
                     return $response->withJson($cidade->json(), 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+    }
+
+    private function delete() {
+        $this->app->group('/cidades', function () {
+            $this->delete('/{nome}', function (Request $request, Response $response, array $args) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $endereco = $enderecoCtrl->delete($args['nome']);
+                    return $response->withStatus(200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {
                         return $response->withJson(["Error" => $e->getMessage()], 404);
