@@ -60,7 +60,25 @@ class EnderecoCtrl {
                 throw new Exception("Problems with Database");
             }
         }
+    }
 
+    public function getAllCidades() {
+        try {
+            $enderecoDao = new EnderecoDao();
+            $result = $enderecoDao->getAllCidades();
+            if (sizeof($result) > 0) {
+                $cidades = [];
+                foreach($result as $cidade) {
+                    $cidades[] = $cidade->json();
+                }
+                return $cidades;
+            } else {
+                throw new Exception("Nothing found", 404);
+            }
+        } catch (Exception $e ) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Problems with Database");
+        }
     }
 
 }

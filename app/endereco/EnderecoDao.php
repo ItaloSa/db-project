@@ -58,4 +58,19 @@ class EnderecoDao {
         return $stmt->fetchObject('app\endereco\Cidade');
     }
 
+    public function getAllCidades() {
+        $sql = "
+            SELECT * FROM cidade
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\endereco\Cidade');
+    }
+
 }

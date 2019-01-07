@@ -33,6 +33,19 @@ class EnderecoRouter {
 
     private function get() {
         $this->app->group('/cidades', function () {
+            $this->get('', function (Request $request, Response $response, array $args) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $cidades = $enderecoCtrl->getAllCidades();
+                    return $response->withJson($cidades, 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
             $this->get('/{nome}', function (Request $request, Response $response, array $args) {
                 $enderecoCtrl = new EnderecoCtrl();
                 try {
