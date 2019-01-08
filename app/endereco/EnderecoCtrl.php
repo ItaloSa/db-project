@@ -137,4 +137,27 @@ class EnderecoCtrl {
         }
     }
 
+    public function getBairro($nome): Bairro {
+        if ($nome == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $bairro = new Bairro();
+            $bairro->setNome($nome);
+            $enderecoDao = new EnderecoDao();
+            return $enderecoDao->getBairro($bairro);
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
 }
