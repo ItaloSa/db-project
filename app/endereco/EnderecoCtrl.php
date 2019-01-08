@@ -105,4 +105,36 @@ class EnderecoCtrl {
 
     }
 
+    // Bairro
+    public function createBairro($data) {
+        if ($data == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $bairro = new Bairro();
+            $bairro->setNome($data["nome"]);
+            $cidadeData = $data["cidade"];
+            $cidade = new Cidade();
+            $cidade->setNome($cidadeData["nome"]);
+            $cidade->setEstado($cidadeData["estado"]);
+            $cidade->setLatitude($cidadeData["latitude"]);
+            $cidade->setLongitude($cidadeData["longitude"]);
+            $bairro->setCidade($cidade);
+            $enderecoDao = new EnderecoDao();
+            $enderecoDao->insertBairro($bairro);
+            return $bairro;
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == "23000") {
+                throw new Exception("Duplicate entry");
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
 }

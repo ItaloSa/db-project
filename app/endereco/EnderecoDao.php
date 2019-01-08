@@ -6,6 +6,7 @@ use \PDO as PDO;
 use \Exception as Exception;
 
 use app\endereco\Cidade as Cidade;
+use app\endereco\Bairro as Bairro;
 use app\util\DataBase as DataBase;
 
 class EnderecoDao {
@@ -86,6 +87,34 @@ class EnderecoDao {
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
         }
+    }
+
+    // Bairro
+    public function insertBairro(Bairro $bairro) {
+        $sql = "
+            INSERT INTO bairro (
+                nome,
+                cidade_nome,
+                cidade_estado
+            ) VALUES (
+                :nome,
+                :cidade_nome,
+                :cidade_estado                
+            )
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+
+        $stmt->bindValue(':nome', $bairro->getNome());
+        $stmt->bindValue(':cidade_nome', $bairro->getCidade()->getNome());
+        $stmt->bindValue(':cidade_estado', $bairro->getCidade()->getEstado());
+
+        $stmt->execute();
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Can't create");
+        }
+
     }
 
 }

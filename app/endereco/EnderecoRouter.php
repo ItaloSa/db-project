@@ -30,6 +30,17 @@ class EnderecoRouter {
                 }
             });
         });
+        $this->app->group('/bairros', function () {
+            $this->post('', function (Request $request, Response $response) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $bairro = $enderecoCtrl->createBairro($request->getParsedBody());
+                    return $response->withJson($bairro->json(), 201);
+                } catch (Exception $e) {
+                    return $response->withJson(["Error" => $e->getMessage()], 400);
+                }
+            });
+        });
     }
 
     private function get() {
