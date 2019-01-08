@@ -170,6 +170,21 @@ class EnderecoDao {
         return $bairros;
     }
 
+    public function deleteBairro(Bairro $bairro) {
+        $sql = "
+            DELETE FROM bairro
+            WHERE nome = :nome
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $bairro->getNome());
+        $stmt->execute();
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+    }
+
     // UTIL
     private function populateBairro($data): Bairro {
         $bairro = new Bairro();

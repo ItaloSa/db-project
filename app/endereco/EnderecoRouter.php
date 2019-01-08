@@ -107,7 +107,22 @@ class EnderecoRouter {
             $this->delete('/{nome}', function (Request $request, Response $response, array $args) {
                 $enderecoCtrl = new EnderecoCtrl();
                 try {
-                    $endereco = $enderecoCtrl->delete($args['nome']);
+                    $endereco = $enderecoCtrl->deleteCidade($args['nome']);
+                    return $response->withStatus(200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+        $this->app->group('/bairros', function () {
+            $this->delete('/{nome}', function (Request $request, Response $response, array $args) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $endereco = $enderecoCtrl->deleteBairro($args['nome']);
                     return $response->withStatus(200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {

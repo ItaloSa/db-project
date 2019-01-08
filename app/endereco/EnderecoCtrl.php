@@ -18,11 +18,7 @@ class EnderecoCtrl {
         }
 
         try {
-            $cidade = new Cidade();
-            $cidade->setNome($data["nome"]);
-            $cidade->setEstado($data["estado"]);
-            $cidade->setLatitude($data["latitude"]);
-            $cidade->setLongitude($data["longitude"]);
+            $cidade = $this->mountCidade($data);
             $enderecoDao = new EnderecoDao();
             $enderecoDao->insertCidade($cidade);
             return $cidade;
@@ -81,7 +77,7 @@ class EnderecoCtrl {
         }
     }
 
-    public function delete($nome) {
+    public function deleteCidade($nome) {
         if ($nome == null) {
             throw new Exception("Data can't be empty");
         }
@@ -112,15 +108,7 @@ class EnderecoCtrl {
         }
 
         try {
-            $bairro = new Bairro();
-            $bairro->setNome($data["nome"]);
-            $cidadeData = $data["cidade"];
-            $cidade = new Cidade();
-            $cidade->setNome($cidadeData["nome"]);
-            $cidade->setEstado($cidadeData["estado"]);
-            $cidade->setLatitude($cidadeData["latitude"]);
-            $cidade->setLongitude($cidadeData["longitude"]);
-            $bairro->setCidade($cidade);
+            $bairro = $this->mountBairro($data);  
             $enderecoDao = new EnderecoDao();
             $enderecoDao->insertBairro($bairro);
             return $bairro;
@@ -177,6 +165,47 @@ class EnderecoCtrl {
             Registry::log()->error($e->getMessage());
             throw new Exception("Problems with Database");
         }
+    }
+
+    public function deleteBairro($nome) {
+        if ($nome == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $bairro = new Bairro();
+            $bairro->setNome($nome);
+            $enderecoDao = new EnderecoDao();
+            return $enderecoDao->deleteBairro($bairro);
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+
+    }
+
+    // UTIL
+    private function mountCidade($data): Cidade {
+        $cidade = new Cidade();
+        $cidade->setNome($data["nome"]);
+        $cidade->setEstado($data["estado"]);
+        $cidade->setLatitude($data["latitude"]);
+        $cidade->setLongitude($data["longitude"]);
+        return $cidade;
+    }
+
+    private function mountBairro($data): Bairro {
+        $bairro = new Bairro();
+        $bairro->setNome($data["nome"]);
+        $cidadeData = $data["cidade"];
+        $bairro->setCidade($this->createCidade($cidadeData));
     }
 
 }
