@@ -160,4 +160,23 @@ class EnderecoCtrl {
         }
     }
 
+    public function getAllBairros() {
+        try {
+            $enderecoDao = new EnderecoDao();
+            $result = $enderecoDao->getAllBairros();
+            if (sizeof($result) > 0) {
+                $bairros = [];
+                foreach($result as $bairro) {
+                    $bairros[] = $bairro->json();
+                }
+                return $bairros;
+            } else {
+                throw new Exception("Nothing found", 404);
+            }
+        } catch (Exception $e ) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Problems with Database");
+        }
+    }
+
 }

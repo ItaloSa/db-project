@@ -141,6 +141,34 @@ class EnderecoDao {
 
     }
 
+    public function getAllBairros() {
+        $sql = "
+            SELECT 
+                b.nome as bairro_nome, 
+                c.nome as cidade_nome, 
+                c.estado, 
+                c.latitude, 
+                c.longitude 
+            FROM bairro b, cidade c
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() < 1) {
+            throw new Exception("Not found", 404);
+        }
+
+        $bairros = [];
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($result as $data) {
+            $bairros[] = $this->populateBairro($data);
+        }
+
+        return $bairros;
+    }
 
     // UTIL
     private function populateBairro($data): Bairro {
