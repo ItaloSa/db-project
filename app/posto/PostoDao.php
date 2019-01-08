@@ -34,7 +34,7 @@ use app\util\DataBase as DataBase;
 
 		$stmt->execute();
 		if ($stmt->rowCount() < 1){
-			throw new Exception("Can´t create")
+			throw new Exception("Can´t create");
 		}
 
 	}
