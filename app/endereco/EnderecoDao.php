@@ -74,6 +74,28 @@ class EnderecoDao {
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\endereco\Cidade');
     }
 
+    public function updateCidade(Cidade $cidade) {
+        $sql = "
+            UPDATE cidade SET 
+                longitude = :longitude,
+                latitude = :latitude
+            WHERE nome = :nome
+            AND estado = :estado
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+
+        $stmt->bindValue(':longitude', $cidade->getLongitude());
+        $stmt->bindValue(':latitude', $cidade->getLatitude());
+        $stmt->bindValue(':nome', $cidade->getNome());
+        $stmt->bindValue(':estado', $cidade->getEstado());
+        
+        $stmt->execute();
+        $cidade = $this->getCidade($cidade);
+        return $cidade;
+    }
+
     public function deleteCidade(Cidade $cidade) {
         $sql = "
             DELETE FROM cidade
@@ -149,7 +171,10 @@ class EnderecoDao {
                 c.estado, 
                 c.latitude, 
                 c.longitude 
-            FROM bairro b, cidade c
+            FROM bairro b
+            JOIN cidade c
+                ON b.cidade_nome = c.nome
+                AND b.cidade_estado = c.estado
         ";
 
         $dataBase = DataBase::getInstance();
@@ -168,6 +193,26 @@ class EnderecoDao {
         }
 
         return $bairros;
+    }
+
+    public function updateBairro(Bairro $bairro) {
+        $sql = "
+            UPDATE bairro SET 
+                cidade_nome = :cidade_nome,
+                cidade_estado = :cidade_estado
+            WHERE nome = :nome
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+
+        $stmt->bindValue(':cidade_nome', $bairro->getCidade()->getNome());
+        $stmt->bindValue(':cidade_estado', $bairro->getCidade()->getEstado());
+        $stmt->bindValue(':nome', $bairro->getNome());
+        
+        $stmt->execute();
+        $cidade = $this->getBairro($bairro);
+        return $cidade;
     }
 
     public function deleteBairro(Bairro $bairro) {

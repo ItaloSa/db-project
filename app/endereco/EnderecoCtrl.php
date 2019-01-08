@@ -77,6 +77,31 @@ class EnderecoCtrl {
         }
     }
 
+    public function updateCidade($nome, $estado, $data) {
+        if ($data == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $cidade = $this->mountCidade($data);
+            $cidade->setNome($nome);
+            $cidade->setEstado($estado);
+            $enderecoDao = new EnderecoDao();
+            $cidade = $enderecoDao->updateCidade($cidade);
+            return $cidade;
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
     public function deleteCidade($nome) {
         if ($nome == null) {
             throw new Exception("Data can't be empty");
@@ -167,6 +192,31 @@ class EnderecoCtrl {
         }
     }
 
+    public function updateBairro($nome, $data) {
+        if ($data == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $bairro = $this->mountBairro($data);
+            $bairro->setNome($nome);
+            $enderecoDao = new EnderecoDao();
+            $bairro = $enderecoDao->updateBairro($bairro);
+            return $bairro;
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
     public function deleteBairro($nome) {
         if ($nome == null) {
             throw new Exception("Data can't be empty");
@@ -205,7 +255,8 @@ class EnderecoCtrl {
         $bairro = new Bairro();
         $bairro->setNome($data["nome"]);
         $cidadeData = $data["cidade"];
-        $bairro->setCidade($this->createCidade($cidadeData));
+        $bairro->setCidade($this->mountCidade($cidadeData));
+        return $bairro;
     }
 
 }

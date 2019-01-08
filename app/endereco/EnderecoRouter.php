@@ -15,6 +15,7 @@ class EnderecoRouter {
         $this->app = $app;
         $this->post();
         $this->get();
+        $this->update();
         $this->delete();
     }
 
@@ -58,7 +59,7 @@ class EnderecoRouter {
                     }
                 }
             });
-            $this->get('/{nome}', function (Request $request, Response $response, array $args) {
+            $this->get('/{nome}_{estado}', function (Request $request, Response $response, array $args) {
                 $enderecoCtrl = new EnderecoCtrl();
                 try {
                     $cidade = $enderecoCtrl->getCidade($args['nome']);
@@ -102,9 +103,42 @@ class EnderecoRouter {
         });
     }
 
+    private function update() {
+        $this->app->group('/cidades', function () {
+            $this->put('/{nome}_{estado}', function (Request $request, Response $response, array $args) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $cidade = $enderecoCtrl->updateCidade($args['nome'], $args['estado'], $request->getParsedBody());
+                    return $response->withJson($cidade->json(), 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+        $this->app->group('/bairros', function () {
+            $this->put('/{nome}', function (Request $request, Response $response, array $args) {
+                $enderecoCtrl = new EnderecoCtrl();
+                try {
+                    $bairro = $enderecoCtrl->updateBairro($args['nome'], $request->getParsedBody());
+                    return $response->withJson($bairro->json(), 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+    }
+
     private function delete() {
         $this->app->group('/cidades', function () {
-            $this->delete('/{nome}', function (Request $request, Response $response, array $args) {
+            $this->delete('/{nome}_{estado}', function (Request $request, Response $response, array $args) {
                 $enderecoCtrl = new EnderecoCtrl();
                 try {
                     $endereco = $enderecoCtrl->deleteCidade($args['nome']);
