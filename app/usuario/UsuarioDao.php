@@ -40,22 +40,7 @@ class UsuarioDao{
 
     }
 
-    public function getUsuario(Usuario $usuario) {
-        $sql = "
-            SELECT * FROM usuario
-            WHERE login = :login
-        ";
-
-        $dataBase = DataBase::getInstance();
-        $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':login', $usuario->getLogin());
-
-        $stmt->execute();
-        if ($stmt->rowCount() < 1) {
-            throw new Exception("Not found", 404);
-        }
-        return $stmt->fetchObject('app\usuario\Usuario');
-    }
+    
 
     public function getAllUsuarios() {
         $sql = "
