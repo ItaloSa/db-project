@@ -2,6 +2,8 @@
 
 namespace app\veiculo;
 
+use app\pessoa\Pessoa as Pessoa;
+
 
 class Veiculo {
     private $placa;
@@ -9,8 +11,9 @@ class Veiculo {
     private $modelo;
     private $pessoaLogin;
 
-    public function __construct() {
-
+    public function json() {
+        $this->pessoaLogin = $this->getPessoa().getLogin()->json();
+        return get_object_vars($this);
     }
 
     public function getPlaca(): string {
