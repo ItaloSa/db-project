@@ -46,6 +46,14 @@ class Pessoa {
         $this->usuarioLogin = $usuarioLogin;
     }
 
+    public function getBairroNome(): string {
+        return $this->bairroNome;
+    }
+
+    public function setBairroNome(string $bairroNome) {
+        $this->bairroNome = $bairroNome;
+    }
+
 
 
 
