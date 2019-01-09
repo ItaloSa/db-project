@@ -1,26 +1,27 @@
 <?php
 
-namespace app\endereco;
+namespace app\usuario;
 
 use \PDO as PDO;
 use \Exception as Exception;
 
-use app\usuario\Usuario as Usuario;
+use app\util\DataBase as DataBase;
 
-use app\tipoUsuario\TipoUsario as TipoUsuario;
+use app\usuario\Usuario as Usuario;
+use app\tipoUsuario\TipoUsuario as TipoUsuario;
 
 class UsuarioDao{
 
-	public function insertUsuario(Usuario $usuario) {
+	public function insert(Usuario $usuario) {
         $sql = "
             INSERT INTO usuario (
                 login,
                 senha,
-                tipoUsuario
+                tipo_usuario_nome
             ) VALUES (
                 :login,
                 :senha,
-                :tipoUsuario
+                :tipo_usuario_nome
             )
         ";
 
@@ -29,7 +30,7 @@ class UsuarioDao{
 
         $stmt->bindValue(':login', $usuario->getLogin());
         $stmt->bindValue(':senha', $usuario->getSenha());
-        $stmt->bindValue(':tipoUsuario', $usuario->getTipoUsuario());
+        $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
         
 
         $stmt->execute();
@@ -40,7 +41,7 @@ class UsuarioDao{
 
     }
 
-    public function getUsuario(Usuario $usuario) {
+    public function get(Usuario $usuario) {
         $sql = "
             SELECT * FROM usuario
             WHERE login = :login
@@ -54,10 +55,11 @@ class UsuarioDao{
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
         }
-        return $stmt->fetchObject('app\usuario\Usuario');
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->populateUsuario($result);
     }
 
-    public function getAllUsuarios() {
+    public function getAll() {
         $sql = "
             SELECT * FROM usuario
         ";
@@ -69,14 +71,22 @@ class UsuarioDao{
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
         }
-        return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\usuario\Usuario');
+
+        $usuarios = [];
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($result as $data) {
+            $usuarios[] = $this->populateUsuario($data);
+        }
+
+        return $usuarios;
     }
 
-    public function updateUsuario(Usuario $usuario) {
+    public function update(Usuario $usuario) {
         $sql = "
             UPDATE usuario SET 
                 senha = :senha,
-                tipoUsuario = :tipoUsuario
+                tipo_usuario_nome = :tipo_usuario_nome
             WHERE login = :login
             
         ";
@@ -84,15 +94,15 @@ class UsuarioDao{
         $stmt = $dataBase->prepare($sql);
         $stmt->bindValue(':login', $usuario->getLogin());
         $stmt->bindValue(':senha', $usuario->getSenha());
-        $stmt->bindValue(':tipoUsuario', $usuario->getTipoUsuario());
+        $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
         
         
         $stmt->execute();
-        $usuario = $this->getUsuario($usuario);
+        $usuario = $this->get($usuario);
         return $usuario;
     }
 
-    public function deleteUsuario(Usuario $usuario) {
+    public function delete(Usuario $usuario) {
         $sql = "
             DELETE FROM usuario
             WHERE login = :login
@@ -106,7 +116,15 @@ class UsuarioDao{
         }
     }
 
-
+    private function populateUsuario($data): Usuario {
+        $usuario = new Usuario();
+        $usuario->setLogin($data['login']);
+        $usuario->setSenha($data['senha']);
+        $tipoUsuario = new TipoUsuario();
+        $tipoUsuario->setNome($data['tipo_usuario_nome']);
+        $usuario->setTipoUsuario($tipoUsuario);
+        return $usuario;
+    }
 
 }
 

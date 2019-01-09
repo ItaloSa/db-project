@@ -10,6 +10,11 @@ class Usuario {
     private $senha;
     private $tipoUsuario;
 
+    public function json() {
+        $this->tipoUsuario = $this->getTipoUsuario()->json();
+        return get_object_vars($this);
+    }
+
     public function getLogin(): string {
         return $this->login;
     }
@@ -30,7 +35,7 @@ class Usuario {
         return $this->tipoUsuario;
     }
 
-    public function setSenha(TipoUsuario $tipoUsuario) {
+    public function setTipoUsuario(TipoUsuario $tipoUsuario) {
         $this->tipoUsuario = $tipoUsuario;
     }
 

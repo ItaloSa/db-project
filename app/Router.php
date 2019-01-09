@@ -9,6 +9,7 @@ use \Exception as Exception;
 use app\bandeira\BandeiraRouter as BandeiraRouter;
 use app\endereco\EnderecoRouter as EnderecoRouter;
 use app\tipoUsuario\TipoUsuarioRouter as TipoUsuarioRouter;
+use app\usuario\UsuarioRouter as UsuarioRouter;
 class Router {
     private $app;
 
@@ -18,6 +19,7 @@ class Router {
         $this->bandeira();
         $this->endereco();
         $this->tipoUsuario();
+        $this->usuario();
     }
 
     private function root() {
@@ -38,6 +40,10 @@ class Router {
 
     private function tipoUsuario() {
         $tipoUsuarioRouter = new TipoUsuarioRouter($this->app);
+    }
+
+    private function usuario() {
+        $usuarioRouter = new UsuarioRouter($this->app);
     }
 
 } 
