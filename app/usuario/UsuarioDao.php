@@ -40,8 +40,6 @@ class UsuarioDao{
 
     }
 
-    
-
     public function getAllUsuarios() {
         $sql = "
             SELECT * FROM usuario
