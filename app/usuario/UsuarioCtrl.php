@@ -49,8 +49,12 @@ class UsuarioCtrl {
                 throw new Exception("Nothing found", 404);
             }
         } catch (Exception $e ) {
-            Registry::log()->error($e->getMessage());
-            throw new Exception("Problems with Database");
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
         }
     }
 
