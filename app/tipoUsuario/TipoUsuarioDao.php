@@ -6,6 +6,7 @@ use \PDO as PDO;
 use \Exception as Exception;
 
 use app\tipoUsuario\TipoUsuario as TipoUsuario;
+use app\util\DataBase as DataBase;
 
 class TipoUsuarioDao {
     public function insert(TipoUsuario $tipoUsuario) {
