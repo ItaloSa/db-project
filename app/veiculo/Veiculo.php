@@ -12,7 +12,6 @@ class Veiculo {
     private $pessoaLogin;
 
     public function json() {
-        $this->pessoaLogin = $this->getPessoa().getLogin()->json();
         return get_object_vars($this);
     }
 
