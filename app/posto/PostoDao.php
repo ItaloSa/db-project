@@ -6,6 +6,8 @@ use\PDO as PDO;
 use \Exception as Exception;
 
 use app\posto\Posto as Posto;
+use app\bandeira\Bandeira as Bandeira;
+
 use app\util\DataBase as DataBase;
 
 	class PostoDao {
@@ -13,11 +15,27 @@ use app\util\DataBase as DataBase;
 		public function insert(Posto $posto){
 
 		$sql = "
-
-			INSERT INTO posto (cnpj, razao_social, nome_fantasia, latitude, longitude
-			endereco, telefone, bandeira_nome, bairro_nome)
-			VALUES (:cnpj, :razao_social, :nome_fantasia, :latitude, :longitude,
-			:endereco, :telefone, :bandeira_nome, :bairro_nome)
+			INSERT INTO posto (
+				cnpj, 
+				razao_social, 
+				nome_fantasia, 
+				latitude, 
+				longitude
+				endereco, 
+				telefone, 
+				bandeira_nome, 
+				bairro_nome
+			) VALUES (
+				:cnpj, 
+				:razao_social, 
+				:nome_fantasia, 
+				:latitude, 
+				:longitude,
+				:endereco, 
+				:telefone, 
+				:bandeira_nome,
+				:bairro_nome
+			)
 		";
 
 		$dataBase = DataBase::getInstance();
@@ -30,7 +48,8 @@ use app\util\DataBase as DataBase;
 		$stmt->bindValue(':longitudee', $posto->getLongitude());
 		$stmt->bindValue(':endereco', $posto->getEndereco());
 		$stmt->bindValue(':telefone', $posto->getTelefone());
-		$stmt->bindValue(':bandeira_nome', $posto->getBandeira());
+		$stmt->bindValue(':bandeira_nome', $posto->getBandeira()->getNome());
+		$stmt->bindValue(':bairro_nome', $posto->getBairro()->getNome());
 
 		$stmt->execute();
 		if ($stmt->rowCount() < 1){
@@ -42,21 +61,21 @@ use app\util\DataBase as DataBase;
 	public function get(Posto $posto){
 		$sql = "
 			SELECT * FROM posto
-			WHERE nomeFantasia = :nomeFantasia
+			WHERE cnpj = :cnpj
 
 		";
 
 		$dataBase = DataBase::getInstance();
 		$stmt = $dataBase->prepare($sql);
-		$stmt->bindValue(':nome', $posto->getNomeFantasia());
+		$stmt->bindValue(':cnpj', $posto->getCnpj());
 		$stmt->execute();
 		if ($stmt->rowCount() < 1){
 			throw new Exception("Not found", 404);
 
 		}
 
-		return $stmt->fetchObject('app\posto\Posto');
-	
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $this->populatePosto($data);
 	}
 
 	public function getAll(){
@@ -72,9 +91,15 @@ use app\util\DataBase as DataBase;
 			throw new Exception("Not found", 404);
 			
 		}
-		return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\posto\Posto');
 
+		$postos = [];
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        foreach($result as $data) {
+            $postos[] = $this->populatePosto($data);
+        }
+
+		return $postos;
 	}
 
 	public function delete(Posto $posto){
@@ -92,20 +117,22 @@ use app\util\DataBase as DataBase;
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
         }
-
-
-
-
-
 	}
 
-
-
-
-
-
-
-
-
+	private function populatePosto($data): Posto {
+		$posto = new Posto();
+		$posto->setCnpj($data['cnpj']);
+		$posto->setRazaoSocial($data['razao_social']);
+		$posto->setNomeFantasia($data['nome_fantasia']);
+		$posto->setLatitude($data['latitude']);
+		$posto->setLongitude($data['longitude']);
+		$posto->setEndereco($data['endereco']);
+		$posto->setTelefone($data['telefone']);
+		$bandeira = new Bandeira();
+		$bandeira->setNome($data['bandeira_nome']);
+		$bandeira->setUrl($data['bandeira_url']);
+		$posto->setBandeira($bandeira);
+		
+	}
 
 }

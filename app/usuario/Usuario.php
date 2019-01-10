@@ -11,7 +11,9 @@ class Usuario {
     private $tipoUsuario;
 
     public function json() {
-        $this->tipoUsuario = $this->getTipoUsuario()->json();
+        if (isset($this->tipoUsuario)) {
+            $this->tipoUsuario = $this->tipoUsuario->json();
+        }
         return get_object_vars($this);
     }
 

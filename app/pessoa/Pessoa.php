@@ -4,15 +4,24 @@ namespace app\pessoa;
 
 
 use app\usuario\Usuario as Usuario;
-
-use app\endereco\Endereco as Endereco;
+use app\endereco\Bairro as Bairro;
 
 class Pessoa {
     private $login;
     private $nome;
     private $endereco;
-    private $usuarioLogin;
-    private $bairroNome;
+    private $usuario;
+    private $bairro;
+
+    public function json() {
+        if (isset($this->usuario)) {
+            $this->usuario = $this->usuario->json();
+        }
+        if (isset($this->bairro)) {
+            $this->bairro = $this->bairro->json();
+        }
+        return get_object_vars($this);
+    }
 
     public function getLogin(): string {
         return $this->login;
@@ -38,28 +47,20 @@ class Pessoa {
         $this->endereco = $endereco;
     }
 
-    public function getUsuarioLogin(): string {
-        return $this->usuarioLogin;
+    public function getUsuario() {
+        return $this->usuario;
     }
 
-    public function setUsuarioLogin(string $usuarioLogin) {
-        $this->usuarioLogin = $usuarioLogin;
+    public function setUsuario(Usuario $usuario) {
+        $this->usuario = $usuario;
     }
 
-    public function getBairroNome(): string {
-        return $this->bairroNome;
+    public function getBairro() {
+        return $this->bairro;
     }
 
-    public function setBairroNome(string $bairroNome) {
-        $this->bairroNome = $bairroNome;
+    public function setBairro(Bairro $bairro) {
+        $this->bairro = $bairro;
     }
-
-
-
-
 
 }
-
-
-
-

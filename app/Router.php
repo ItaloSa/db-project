@@ -10,6 +10,7 @@ use app\bandeira\BandeiraRouter as BandeiraRouter;
 use app\endereco\EnderecoRouter as EnderecoRouter;
 use app\tipoUsuario\TipoUsuarioRouter as TipoUsuarioRouter;
 use app\usuario\UsuarioRouter as UsuarioRouter;
+use app\pessoa\PessoaRouter as PessoaRouter;
 class Router {
     private $app;
 
@@ -20,6 +21,7 @@ class Router {
         $this->endereco();
         $this->tipoUsuario();
         $this->usuario();
+        $this->pessoa();
     }
 
     private function root() {
@@ -44,6 +46,10 @@ class Router {
 
     private function usuario() {
         $usuarioRouter = new UsuarioRouter($this->app);
+    }
+    
+    private function pessoa() {
+        $pessoaRouter = new PessoaRouter($this->app);
     }
 
 } 

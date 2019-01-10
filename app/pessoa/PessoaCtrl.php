@@ -5,21 +5,25 @@ namespace app\pessoa;
 use \Exception as Exception;
 use \Error as Error;
 use Monolog\Registry as Registry;
+
 use app\pessoa\Pessoa as Pessoa;
+use app\pessoa\PessoaDao as PessoaDao;
 
-use app\Pessoa\PessoaDao as PessoaDao;
-
-class PessoaCtlr {
+use app\usuario\Usuario as Usuario;
+use app\endereco\Bairro as Bairro;
+use app\endereco\Cidade as Cidade;
+use app\tipoUsuario\TipoUsuario as TipoUsuario;
+class PessoaCtrl {
 
 	public function create($data) {
         if ($data == null) {
             throw new Exception("Data can't be empty");
         }
         try {
-            $usuario = $this->mountUsuario($data);
-            $usuarioDao = new UsuarioDao();
-            $usuarioDao->insert($usuario);
-            return $usuario;
+            $pessoa = $this->mountPessoa($data);
+            $pessoaDao = new PessoaDao();
+            $pessoaDao->insert($pessoa);
+            return $pessoa;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
@@ -36,7 +40,7 @@ class PessoaCtlr {
     public function getAll() {
         try {
             $pessoaDao = new PessoaDao();
-            $result = $PessoaDao->getAll();
+            $result = $pessoaDao->getAll();
             if (sizeof($result) > 0) {
                 $pessoas = [];
                 foreach($result as $pessoa) {
@@ -102,38 +106,35 @@ class PessoaCtlr {
     }
 
     private function mountPessoa($data): Pessoa {
-        $pessoa = new Usuario();
+        $pessoa = new Pessoa();
         $pessoa->setLogin($data['login']);
         $pessoa->setNome($data['nome']);
         $pessoa->setEndereco($data['endereco']);
-        $pessoa->setUsuarioLogin($data['usuarioLogin']);
-        $pessoa->setNome($data['nome']);
-        $pessoa->setBairroNome($data['bairroNome']);
-        
-        return $usuario;
+        $pessoa->setBairro($this->mountBairro($data['bairro']));
+        if (isset($data['usuario'])) {
+            $usuario = new Usuario();
+            $usuario->setLogin($data['usuario']['login']);
+            $usuario->setSenha($data['usuario']['senha']);
+            if (isset($data['tipoUsuario'])) {
+                $tipoUsuario = new TipoUsuario();
+                $tipoUsuario->setNome($data['tipoUsuario']['nome']);
+                $usuario->setTipoUsuario($tipoUsuario);
+            }
+            $pessoa->setUsuario($usuario);
+        }
+        return $pessoa;
     }
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private function mountBairro($data): Bairro {
+        $bairro = new Bairro();
+        $bairro->setNome($data['nome']);
+        $cidade = new Cidade();
+        $cidade->setNome($data['cidade']['nome']);
+        $cidade->setEstado($data['cidade']['estado']);
+        $cidade->setLatitude($data['cidade']['latitude']);
+        $cidade->setLongitude($data['cidade']['longitude']);
+        $bairro->setCidade($cidade);
+        return $bairro;
+    }
 
 }
