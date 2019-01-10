@@ -34,7 +34,6 @@ class PessoaDao {
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':login', $pessoa->getLogin());
         $stmt = $this->bindValues($stmt, $pessoa);        
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
@@ -44,26 +43,8 @@ class PessoaDao {
 
      public function get(Pessoa $pessoa) {
         $sql = "
-            SELECT 
-                p.login,
-                p.endereco,
-                p.nome,
-                p.usuario_login,
-                p.bairro_nome,
-                bc.cidade_nome,
-                bc.cidade_estado,
-                bc.cidade_latitude,
-                bc.cidade_longitude,
-                u.senha,
-                u.tipo_usuario_nome
-            FROM pessoa p
-            JOIN bairro_cidade bc
-                ON p.bairro_nome = bc.bairro_nome
-            LEFT JOIN usuario u
-                ON p.usuario_login = u.login
-            LEFT JOIN tipo_usuario tu
-                ON u.tipo_usuario_nome = tu.nome
-            WHERE p.login = :login
+            SELECT * FROM pessoa_completa pc
+            WHERE pc.login = :login
         ";
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
@@ -78,25 +59,7 @@ class PessoaDao {
 
     public function getAll() {
         $sql = "
-            SELECT 
-                p.login,
-                p.endereco,
-                p.nome,
-                p.usuario_login,
-                p.bairro_nome,
-                bc.cidade_nome,
-                bc.cidade_estado,
-                bc.cidade_latitude,
-                bc.cidade_longitude,
-                u.senha,
-                u.tipo_usuario_nome
-            FROM pessoa p
-            JOIN bairro_cidade bc
-                ON p.bairro_nome = bc.bairro_nome
-            LEFT JOIN usuario u
-                ON p.usuario_login = u.login
-            LEFT JOIN tipo_usuario tu
-                ON u.tipo_usuario_nome = tu.nome
+            SELECT * FROM pessoa_completa pc
         ";
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
@@ -115,19 +78,22 @@ class PessoaDao {
 
     }
 
-    public function update(Pessoa $pessoa) {
+    public function update($login, Pessoa $pessoa) {
         $sql = "
             UPDATE pessoa SET 
+                login = :login,
                 nome = :nome,
                 endereco = :endereco,
                 usuario_login = :usuario_login,
                 bairro_nome = :bairro_nome
-            WHERE login = :login
+            WHERE login = :old_login
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt = $this->bindValues($stmt, $pessoa);                
+        // var_dump($pessoa);
+        $stmt = $this->bindValues($stmt, $pessoa);
+        $stmt->bindValue(':old_login', $login);                
         $stmt->execute();
         $pessoa = $this->get($pessoa);
         return $pessoa;
@@ -176,6 +142,7 @@ class PessoaDao {
     }
 
     private function bindValues($stmt, $pessoa) {
+        $stmt->bindValue(':login', $pessoa->getLogin());
         $stmt->bindValue(':nome', $pessoa->getNome());
         $stmt->bindValue(':endereco', $pessoa->getEndereco());
         if ($pessoa->getUsuario() != null) {
@@ -184,7 +151,6 @@ class PessoaDao {
             $stmt->bindValue(':usuario_login', null);
         }
         $stmt->bindValue(':bairro_nome', $pessoa->getBairro()->getNome());
-        $stmt->bindValue(':login', $pessoa->getLogin());
         return $stmt;
     }
 }

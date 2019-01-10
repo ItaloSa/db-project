@@ -66,9 +66,8 @@ class PessoaCtrl {
         }
         try {
             $pessoa = $this->mountPessoa($data);
-            $pessoa->setLogin($login);
             $pessoaDao = new PessoaDao();
-            $pessoa = $pessoaDao->update($pessoa);
+            $pessoa = $pessoaDao->update($login, $pessoa);
             return $pessoa;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
@@ -76,7 +75,9 @@ class PessoaCtrl {
         } catch (Exception $e ) {
             if ($e->getCode() == 404) {
                 throw new Exception($e->getMessage(), $e->getCode());
-            } else {
+            } else if ($e->getCode() == 400) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else  {
                 Registry::log()->error($e->getMessage());
                 throw new Exception("Problems with Database");
             }
