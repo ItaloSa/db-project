@@ -29,7 +29,7 @@ class CombustivelDao {
 
     public function get(Combustivel $combustivel) {
         $sql = "
-            SELECT * FROM tipo_usuario
+            SELECT * FROM combustivel
             WHERE nome = :nome
         ";
         $dataBase = DataBase::getInstance();
@@ -61,6 +61,21 @@ class CombustivelDao {
 
     }
 
+    public function update($nome, Combustivel $combustivel) {
+        $sql = "
+            UPDATE combustivel SET 
+				nome = :nome
+            WHERE nome = :old_nome
+        ";
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $combustivel->getNome());        
+        $stmt->bindValue(':old_nome', $nome);                
+        $stmt->execute();
+        $combustivel = $this->get($combustivel);
+        return $combustivel;
+    }
+
     public function delete(Combustivel $combustivel) {
         $sql = "
             DELETE FROM combustivel
@@ -74,8 +89,5 @@ class CombustivelDao {
             throw new Exception("Not found", 404);
         }
     }
-
-
-
-
+    
 }

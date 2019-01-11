@@ -10,14 +10,14 @@ use app\combustivel\Combustivel as Combustivel;
 use app\combustivel\CombustivelDao as CombustivelDao;
 
 
-class TipoUsuarioCtrl {
+class CombustivelCtrl {
 
 	public function create($data) {
         if ($data == null) {
             throw new Exception("Data can't be empty");
         }
         try {
-            $combustivel = new Cambustivel();
+            $combustivel = new Combustivel();
             $combustivel->setNome($data['nome']);
             $CombustivelDao = new CombustivelDao();
             $CombustivelDao->insert($combustivel);
@@ -26,7 +26,9 @@ class TipoUsuarioCtrl {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
-            if ($e->getCode() == "23000") {
+            if ($e->errorInfo[1] == 1452) {
+                throw new Exception("Can't Create");
+            } else if ($e->errorInfo[1] == 1062) {
                 throw new Exception("Duplicate entry");
             } else {
                 Registry::log()->error($e->getMessage());
@@ -40,11 +42,11 @@ class TipoUsuarioCtrl {
             $combustivelDao = new CombustivelDao();
             $result = $combustivelDao->getAll();
             if (sizeof($result) > 0) {
-                $combustivelLista = [];
+                $combustiveis = [];
                 foreach($result as $combustivel) {
-                    $combustivelLista[] = $combustivel->json();
+                    $combustiveis[] = $combustivel->json();
                 }
-                return $combustivelLista;
+                return $combustiveis;
             } else {
                 throw new Exception("Nothing found", 404);
             }
@@ -54,6 +56,31 @@ class TipoUsuarioCtrl {
         }
     }
 
+    public function update($nome, $data) {
+        if ($data == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $combustivel = new Combustivel();
+            $combustivel->setNome($data['nome']);
+            $combustivelDao = new CombustivelDao();
+            $combustivel = $combustivelDao->update($nome, $combustivel);
+            return $combustivel;
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else if ($e->getCode() == 400) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else  {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
 
     public function delete($nome) {
         if ($nome == null) {
