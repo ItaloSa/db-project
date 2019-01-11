@@ -11,7 +11,7 @@ class Veiculo {
     private $pessoa;
 
     public function json() {
-        $this->pessoa = $this->pessoa->getLogin()->json();
+        $this->pessoa = $this->pessoa->json();
         return get_object_vars($this);
     }
 
@@ -39,11 +39,11 @@ class Veiculo {
         $this->modelo = $modelo;
     }
 
-    public function getPessoa(): string {
+    public function getPessoa(): Pessoa {
         return $this->pessoa;
     }
 
-    public function setPessoa(string $pessoa) {
+    public function setPessoa(Pessoa $pessoa) {
         $this->pessoa = $pessoa;
     }
 

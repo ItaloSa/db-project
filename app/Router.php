@@ -11,6 +11,8 @@ use app\endereco\EnderecoRouter as EnderecoRouter;
 use app\tipoUsuario\TipoUsuarioRouter as TipoUsuarioRouter;
 use app\usuario\UsuarioRouter as UsuarioRouter;
 use app\pessoa\PessoaRouter as PessoaRouter;
+use app\veiculo\VeiculoRouter as VeiculoRouter;
+
 class Router {
     private $app;
 
@@ -22,6 +24,7 @@ class Router {
         $this->tipoUsuario();
         $this->usuario();
         $this->pessoa();
+        $this->veiculo();
     }
 
     private function root() {
@@ -50,6 +53,10 @@ class Router {
     
     private function pessoa() {
         $pessoaRouter = new PessoaRouter($this->app);
+    }
+
+    private function veiculo() {
+        $veiculoRouter = new VeiculoRouter($this->app);
     }
 
 } 

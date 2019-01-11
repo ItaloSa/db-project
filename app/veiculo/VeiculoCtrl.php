@@ -26,7 +26,9 @@ class VeiculoCtrl {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
-            if ($e->getCode() == "23000") {
+            if ($e->errorInfo[1] == 1452) {
+                throw new Exception("Can't Create");
+            } else if ($e->errorInfo[1] == 1062) {
                 throw new Exception("Duplicate entry");
             } else {
                 Registry::log()->error($e->getMessage());
@@ -65,9 +67,8 @@ class VeiculoCtrl {
 
         try {
             $veiculo = $this->mountVeiculo($data);
-            $veiculo->setPlaca($placa);
             $veiculoDao = new VeiculoDao();
-            $veiculo = $veiculoDao->update($veiculo);
+            $veiculo = $veiculoDao->update($placa, $veiculo);
             return $veiculo;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
@@ -90,7 +91,7 @@ class VeiculoCtrl {
 
         try {
             $veiculo = new Veiculo();
-            $veiculo->setLogin($login);
+            $veiculo->setPlaca($placa);
             $veiculoDao = new VeiculoDao();
             return $veiculoDao->delete($veiculo);
         } catch (Error $e) {
@@ -113,7 +114,7 @@ class VeiculoCtrl {
         $veiculo->setModelo($data['modelo']);
 
         $pessoaCtrl = new PessoaCtrl();
-        $pessoa = $pessoaCtrl->mountPessoa($data);
+        $pessoa = $pessoaCtrl->mountPessoa($data['pessoa']);
 
         $veiculo->setPessoa($pessoa); // TODO
         return $veiculo;

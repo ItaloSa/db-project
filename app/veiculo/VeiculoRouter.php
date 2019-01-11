@@ -6,7 +6,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Exception as Exception;
 
-use app\usuario\VeiculoCtrl as VeiculoCtrl;
+use app\veiculo\VeiculoCtrl as VeiculoCtrl;
 
 class VeiculoRouter {
     private $app;

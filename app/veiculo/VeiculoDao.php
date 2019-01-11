@@ -53,7 +53,7 @@ class VeiculoDao {
             throw new Exception("Not found", 404);
         }
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $this->populatePessoa($result);
+        return $this->populateVeiculo($result);
     }
 
     public function getAll() {
@@ -72,27 +72,29 @@ class VeiculoDao {
         $veiculos = [];
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach($result as $data) {
-            $veiculos[] = $this->populatePessoa($data);
+            $veiculos[] = $this->populateVeiculo($data);
         }
         return $veiculos;
 
 
     }
 
-    public function update(Veiculo $veiculo) {
+    public function update($placa, Veiculo $veiculo) {
         $sql = "
             UPDATE veiculo SET 
+                placa = :placa,
                 marca = :marca,
                 modelo = :modelo,
                 pessoa_login = :pessoa_login
-            WHERE placa = :placa
+            WHERE placa = :placa_old
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt = $this->bindValues($stmt, $pessoa);                
+        $stmt = $this->bindValues($stmt, $veiculo);
+        $stmt->bindValue(':placa_old', $placa);
         $stmt->execute();
-        $pessoa = $this->get($pessoa);
+        $pessoa = $this->get($veiculo);
         return $pessoa;
     }
 
@@ -110,6 +112,14 @@ class VeiculoDao {
         }
     }
 
+    private function bindValues($stmt, Veiculo $veiculo) {
+        $stmt->bindValue(':placa', $veiculo->getPlaca());
+        $stmt->bindValue(':marca', $veiculo->getMarca());
+        $stmt->bindValue(':modelo', $veiculo->getModelo());
+        $stmt->bindValue(':pessoa_login', $veiculo->getPessoa()->getLogin());
+        return $stmt;
+    }
+
     public function populateVeiculo($data) {
         $veiculo = new Veiculo();
         $veiculo->setPlaca($data['placa']);
@@ -120,6 +130,7 @@ class VeiculoDao {
         $pessoa = $pessoaDao->populatePessoa($data);
 
         $veiculo->setPessoa($pessoa);
+        return $veiculo;
     }   
 
 }
