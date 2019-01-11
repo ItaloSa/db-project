@@ -113,7 +113,7 @@ class PessoaDao {
         }
     }
 
-    private function populatePessoa($data): Pessoa {
+    public function populatePessoa($data): Pessoa {
         $pessoa = new Pessoa();
         $pessoa->setLogin($data['login']);
         $pessoa->setEndereco($data['endereco']);

@@ -4,15 +4,14 @@ namespace app\veiculo;
 
 use app\pessoa\Pessoa as Pessoa;
 
-
 class Veiculo {
     private $placa;
     private $marca;
     private $modelo;
-    private $pessoaLogin;
+    private $pessoa;
 
     public function json() {
-        $this->pessoaLogin = $this->getPessoa().getLogin()->json();
+        $this->pessoa = $this->pessoa->getLogin()->json();
         return get_object_vars($this);
     }
 
@@ -40,12 +39,12 @@ class Veiculo {
         $this->modelo = $modelo;
     }
 
-    public function getPessoaLogin(): string {
-        return $this->pessoaLogin;
+    public function getPessoa(): string {
+        return $this->pessoa;
     }
 
-    public function setPessoaLogin(string $pessoaLogin) {
-        $this->pessoaLogin = $pessoaLogin;
+    public function setPessoa(string $pessoa) {
+        $this->pessoa = $pessoa;
     }
 
 
