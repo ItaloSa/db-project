@@ -1,16 +1,16 @@
 <?php
 
-namespace app\usuario;
+namespace app\veiculo;
 
 use \Exception as Exception;
 use \Error as Error;
 use Monolog\Registry as Registry;
 
-use app\usuario\Usuario as Usuario;
-use app\usuario\UsuarioDao as UsuarioDao;
-use app\tipoUsuario\TipoUsuario as TipoUsuario;
+use app\veiculo\Veiculo as Veiculo;
+use app\veiculo\VeiculoDao as VeiculoDao;
+use app\pessoa\PessoaCtrl as PessoaCtrl;
 
-class UsuarioCtrl {
+class VeiculoCtrl {
 
     public function create($data) {
         if ($data == null) {
@@ -18,10 +18,10 @@ class UsuarioCtrl {
         }
 
         try {
-            $usuario = $this->mountUsuario($data);
-            $usuarioDao = new UsuarioDao();
-            $usuarioDao->insert($usuario);
-            return $usuario;
+            $veiculo = $this->mountVeiculo($data);
+            $veiculoDao = new VeiculoDao();
+            $veiculoDao->insert($veiculo);
+            return $veiculo;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
@@ -37,14 +37,14 @@ class UsuarioCtrl {
 
     public function getAll() {
         try {
-            $usuarioDao = new UsuarioDao();
-            $result = $usuarioDao->getAll();
+            $veiculoDao = new VeiculoDao();
+            $result = $veiculoDao->getAll();
             if (sizeof($result) > 0) {
-                $usuarios = [];
-                foreach($result as $usuario) {
-                    $usuarios[] = $usuario->json();
+                $veiculos = [];
+                foreach($result as $veiculo) {
+                    $veiculos[] = $veiculo->json();
                 }
-                return $usuarios;
+                return $veiculos;
             } else {
                 throw new Exception("Nothing found", 404);
             }
@@ -58,17 +58,17 @@ class UsuarioCtrl {
         }
     }
 
-    public function update($login, $data) {
+    public function update($placa, $data) {
         if ($data == null) {
             throw new Exception("Data can't be empty");
         }
 
         try {
-            $usuario = $this->mountUsuario($data);
-            $usuario->setLogin($login);
-            $usuarioDao = new UsuarioDao();
-            $usuario = $usuarioDao->update($usuario);
-            return $usuario;
+            $veiculo = $this->mountVeiculo($data);
+            $veiculo->setPlaca($placa);
+            $veiculoDao = new VeiculoDao();
+            $veiculo = $veiculoDao->update($veiculo);
+            return $veiculo;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
@@ -82,16 +82,17 @@ class UsuarioCtrl {
         }
     }
 
-    public function delete($login) {
-        if ($login == null) {
+
+    public function delete($placa) {
+        if ($placa == null) {
             throw new Exception("Data can't be empty");
         }
 
         try {
-            $usuario = new Usuario();
-            $usuario->setLogin($login);
-            $usuarioDao = new UsuarioDao();
-            return $usuarioDao->delete($usuario);
+            $veiculo = new Veiculo();
+            $veiculo->setLogin($login);
+            $veiculoDao = new VeiculoDao();
+            return $veiculoDao->delete($veiculo);
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
@@ -105,14 +106,17 @@ class UsuarioCtrl {
         }
     }
 
-    private function mountUsuario($data): Usuario {
-        $usuario = new Usuario();
-        $usuario->setLogin($data['login']);
-        $usuario->setSenha($data['senha']);
-        $tipoUsuario = new TipoUsuario();
-        $tipoUsuario->setNome($data['tipoUsuario']['nome']);
-        $usuario->setTipoUsuario($tipoUsuario);
-        return $usuario;
+    private function mountVeiculo($data): Veiculo {
+        $veiculo = new Veiculo();
+        $veiculo->setPlaca($data['placa']);
+        $veiculo->setMarca($data['marca']);
+        $veiculo->setModelo($data['modelo']);
+
+        $pessoaCtrl = new PessoaCtrl();
+        $pessoa = $pessoaCtrl->mountPessoa($data);
+
+        $veiculo->setPessoa($pessoa); // TODO
+        return $veiculo;
     }
 
-}
+}    

@@ -106,7 +106,7 @@ class PessoaCtrl {
         }
     }
 
-    private function mountPessoa($data): Pessoa {
+    public function mountPessoa($data): Pessoa {
         $pessoa = new Pessoa();
         $pessoa->setLogin($data['login']);
         $pessoa->setNome($data['nome']);
@@ -126,7 +126,7 @@ class PessoaCtrl {
         return $pessoa;
     }
 
-    private function mountBairro($data): Bairro {
+    public function mountBairro($data): Bairro {
         $bairro = new Bairro();
         $bairro->setNome($data['nome']);
         $cidade = new Cidade();
