@@ -7,20 +7,20 @@ use \Exception as Exception;
 
 use app\posto\Posto as Posto;
 use app\bandeira\Bandeira as Bandeira;
+use app\pessoa\PessoaDao as PessoaDao;
 
 use app\util\DataBase as DataBase;
 
-	class PostoDao {
+class PostoDao {
 
-		public function insert(Posto $posto){
-
+	public function insert(Posto $posto){
 		$sql = "
 			INSERT INTO posto (
 				cnpj, 
 				razao_social, 
 				nome_fantasia, 
 				latitude, 
-				longitude
+				longitude,
 				endereco, 
 				telefone, 
 				bandeira_nome, 
@@ -40,29 +40,17 @@ use app\util\DataBase as DataBase;
 
 		$dataBase = DataBase::getInstance();
 		$stmt = $dataBase->prepare($sql);
-
-		$stmt->bindValue(':cnpj', $posto->getCnpj());
-		$stmt->bindValue(':razao_social', $posto->getRazaoSocial());
-		$stmt->bindValue(':nome_fantasia', $posto->getNomeFantasia());
-		$stmt->bindValue(':latitude', $posto->getLatitude());
-		$stmt->bindValue(':longitudee', $posto->getLongitude());
-		$stmt->bindValue(':endereco', $posto->getEndereco());
-		$stmt->bindValue(':telefone', $posto->getTelefone());
-		$stmt->bindValue(':bandeira_nome', $posto->getBandeira()->getNome());
-		$stmt->bindValue(':bairro_nome', $posto->getBairro()->getNome());
-
+		$stmt = $this->bindValues($stmt, $posto);
 		$stmt->execute();
-		if ($stmt->rowCount() < 1){
-			throw new Exception("Can´t create");
-		}
-
+		if ($stmt->rowCount() < 1) {
+			throw new Exception("Can't create");
+		}	
 	}
 
 	public function get(Posto $posto){
 		$sql = "
-			SELECT * FROM posto
+			SELECT * FROM posto_completo
 			WHERE cnpj = :cnpj
-
 		";
 
 		$dataBase = DataBase::getInstance();
@@ -71,16 +59,15 @@ use app\util\DataBase as DataBase;
 		$stmt->execute();
 		if ($stmt->rowCount() < 1){
 			throw new Exception("Not found", 404);
-
 		}
 
 		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-		return $this->populatePosto($data);
+		return $this->populatePosto($result);
 	}
 
 	public function getAll(){
 		$sql = "
-			SELECT * FROM posto
+			SELECT * FROM posto_completo
 		";
 
 		$dataBase = DataBase::getInstance();
@@ -94,25 +81,47 @@ use app\util\DataBase as DataBase;
 
 		$postos = [];
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach($result as $data) {
+		
+		foreach($result as $data) {
             $postos[] = $this->populatePosto($data);
         }
 
 		return $postos;
 	}
 
+	public function update($cnpj, Posto $posto) {
+        $sql = "
+            UPDATE posto SET 
+				cnpj = :cnpj ,
+				razao_social = :razao_social,
+				nome_fantasia = :nome_fantasia,
+				latitude = :latitude, 
+				longitude = :longitude,
+				endereco = :endereco, 
+				telefone = :telefone, 
+				bandeira_nome = :bandeira_nome, 
+				bairro_nome = :bairro_nome
+            WHERE cnpj = :old_cnpj
+        ";
+
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt = $this->bindValues($stmt, $posto);
+        $stmt->bindValue(':old_cnpj', $cnpj);                
+        $stmt->execute();
+        $posto = $this->get($posto);
+        return $posto;
+    }
+
 	public function delete(Posto $posto){
 		$sql = "
-
 			DELETE FROM posto
-			WHERE nomeFantasia = :nomeFantasia
-
+			WHERE cnpj = :cnpj
 		";
 
 		$dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':nome', $bandeira->getNome());
+        $stmt->bindValue(':cnpj', $posto->getCnpj());
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
@@ -128,11 +137,31 @@ use app\util\DataBase as DataBase;
 		$posto->setLongitude($data['longitude']);
 		$posto->setEndereco($data['endereco']);
 		$posto->setTelefone($data['telefone']);
-		$bandeira = new Bandeira();
-		$bandeira->setNome($data['bandeira_nome']);
-		$bandeira->setUrl($data['bandeira_url']);
-		$posto->setBandeira($bandeira);
-		
+		if (isset($data['bandeira_nome'])) {
+			$bandeira = new Bandeira();
+			$bandeira->setNome($data['bandeira_nome']);
+			$bandeira->setUrl($data['bandeira_url']);
+			$posto->setBandeira($bandeira);
+		}
+		if (isset($data['bairro_nome'])) {
+			$pessoaDao = new PessoaDao();
+			$bairro = $pessoaDao->populateBairro($data);
+			$posto->setBairro($bairro);
+		}
+		return $posto;
+	}
+
+	private function bindValues($stmt, Posto $posto) {
+		$stmt->bindValue(':cnpj', $posto->getCnpj());
+		$stmt->bindValue(':razao_social', $posto->getRazaoSocial());
+		$stmt->bindValue(':nome_fantasia', $posto->getNomeFantasia());
+		$stmt->bindValue(':latitude', $posto->getLatitude());
+		$stmt->bindValue(':longitude', $posto->getLongitude());
+		$stmt->bindValue(':endereco', $posto->getEndereco());
+		$stmt->bindValue(':telefone', $posto->getTelefone());
+		$stmt->bindValue(':bandeira_nome', $posto->getBandeira()->getNome());
+		$stmt->bindValue(':bairro_nome', $posto->getBairro()->getNome());
+		return $stmt;
 	}
 
 }

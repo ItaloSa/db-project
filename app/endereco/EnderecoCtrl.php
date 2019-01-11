@@ -242,7 +242,7 @@ class EnderecoCtrl {
     }
 
     // UTIL
-    private function mountCidade($data): Cidade {
+    public function mountCidade($data): Cidade {
         $cidade = new Cidade();
         $cidade->setNome($data["nome"]);
         $cidade->setEstado($data["estado"]);
@@ -251,7 +251,7 @@ class EnderecoCtrl {
         return $cidade;
     }
 
-    private function mountBairro($data): Bairro {
+    public function mountBairro($data): Bairro {
         $bairro = new Bairro();
         $bairro->setNome($data["nome"]);
         $cidadeData = $data["cidade"];

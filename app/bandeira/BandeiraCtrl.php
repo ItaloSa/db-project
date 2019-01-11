@@ -17,9 +17,7 @@ class BandeiraCtrl {
         }
 
         try {
-            $bandeira = new Bandeira();
-            $bandeira->setNome($data["nome"]);
-            $bandeira->setUrl($data["url"]);
+            $bandeira = $this->mountBandeira($data);
             $bandeiraDao = new BandeiraDao();
             $bandeiraDao->insert($bandeira);
             return $bandeira;
@@ -102,6 +100,13 @@ class BandeiraCtrl {
             }
         }
 
+    }
+
+    public function mountBandeira($data): Bandeira {
+        $bandeira = new Bandeira();
+        $bandeira->setNome($data["nome"]);
+        $bandeira->setUrl($data["url"]);
+        return $bandeira;
     }
 
 }

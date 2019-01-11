@@ -12,6 +12,7 @@ use app\tipoUsuario\TipoUsuarioRouter as TipoUsuarioRouter;
 use app\usuario\UsuarioRouter as UsuarioRouter;
 use app\pessoa\PessoaRouter as PessoaRouter;
 use app\veiculo\VeiculoRouter as VeiculoRouter;
+use app\posto\PostoRouter as PostoRouter;
 
 class Router {
     private $app;
@@ -25,6 +26,7 @@ class Router {
         $this->usuario();
         $this->pessoa();
         $this->veiculo();
+        $this->posto();
     }
 
     private function root() {
@@ -57,6 +59,10 @@ class Router {
 
     private function veiculo() {
         $veiculoRouter = new VeiculoRouter($this->app);
+    }
+
+    private function posto() {
+        $postoRouter = new PostoRouter($this->app);
     }
 
 } 

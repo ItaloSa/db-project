@@ -118,14 +118,7 @@ class PessoaDao {
         $pessoa->setLogin($data['login']);
         $pessoa->setEndereco($data['endereco']);
         $pessoa->setNome($data['nome']);
-        $bairro = new Bairro();
-        $bairro->setNome($data['bairro_nome']);
-        $cidade = new Cidade();
-        $cidade->setNome($data['cidade_nome']);
-        $cidade->setEstado($data['cidade_estado']);
-        $cidade->setLatitude($data['cidade_latitude']);
-        $cidade->setLongitude($data['cidade_longitude']);
-        $bairro->setCidade($cidade);
+        $bairro = $this->populateBairro($data);
         $pessoa->setBairro($bairro);
         if (isset($data['usuario_login'])) {
             $usuario = new Usuario();
@@ -139,6 +132,18 @@ class PessoaDao {
             $pessoa->setUsuario($usuario);
         }
         return $pessoa;
+    }
+
+    public function populateBairro($data) {
+        $bairro = new Bairro();
+        $bairro->setNome($data['bairro_nome']);
+        $cidade = new Cidade();
+        $cidade->setNome($data['cidade_nome']);
+        $cidade->setEstado($data['cidade_estado']);
+        $cidade->setLatitude($data['cidade_latitude']);
+        $cidade->setLongitude($data['cidade_longitude']);
+        $bairro->setCidade($cidade);
+        return $bairro;
     }
 
     private function bindValues($stmt, $pessoa) {
