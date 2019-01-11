@@ -11,7 +11,7 @@ use app\comentario\Comentario as Comentario;
 
 class ComentarioDao{
 
-	public function insert(Usuario $comentario) {
+	public function insert(Comentario $comentario) {
         $sql = "
             INSERT INTO comentario (
                 posto_cnpj,
@@ -94,7 +94,7 @@ class ComentarioDao{
         $stmt = $dataBase->prepare($sql);
         $stmt->bindValue(':pessoa_login', $comentario->getPessoaLogin());
         $stmt->bindValue(':senha', $comentario->getPostoCnpj());
-        $stmt->bindValue(':tipo_usuario_nome', $comentario->getCombustivelNome());
+        $stmt->bindValue(':combustivel_nome', $comentario->getCombustivelNome());
         
         
         $stmt->execute();
