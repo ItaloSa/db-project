@@ -57,14 +57,14 @@ class ComentarioCtrl {
         }
     }
 
-    public function update($login, $data) {
+    public function update($pessoa_login, $data) {
         if ($data == null) {
             throw new Exception("Data can't be empty");
         }
 
         try {
             $comentario = $this->mountComentario($data);
-            $comentario->setLogin($login);
+            $comentario->setPessoaLogin($pessoa_login);
             $comentarioDao = new ComentarioDao();
             $comentario = $comentarioDao->update($comentario);
             return $comentario;
@@ -80,3 +80,35 @@ class ComentarioCtrl {
             }
         }
     }
+
+    public function delete($pessoa_login) {
+        if ($pessoa_login == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $comentario = new Comentario();
+            $comentario->setPessoaLogin($pessoa_login);
+            $comentarioDao = new ComentarioDao();
+            return $comentarioDao->delete($comentario);
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
+    private function mountComentario($data): Comentario {
+        $comentario = new Comentario();
+        $comentario->setPessoaLogin($data['pessoa_login']);
+        $comentario->setPostoCnpj($data['posto_cnpj']);
+        $comentario->setCombustivelNome($data['combustivel_nome']);
+        return $comentario;
+    }
+}    
