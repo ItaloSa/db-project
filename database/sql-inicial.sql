@@ -275,3 +275,58 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+CREATE 
+VIEW `bairro_cidade` AS
+    SELECT 
+        `b`.`nome` AS `bairro_nome`,
+        `b`.`cidade_nome` AS `cidade_nome`,
+        `b`.`cidade_estado` AS `cidade_estado`,
+        `c`.`latitude` AS `cidade_latitude`,
+        `c`.`longitude` AS `cidade_longitude`
+    FROM
+        (`bairro` `b`
+        JOIN `cidade` `c` ON (((`b`.`cidade_nome` = `c`.`nome`)
+            AND (`b`.`cidade_estado` = `c`.`estado`))));
+            
+CREATE 
+VIEW `pessoa_completa` AS
+    SELECT 
+        `p`.`login` AS `login`,
+        `p`.`endereco` AS `endereco`,
+        `p`.`nome` AS `nome`,
+        `p`.`usuario_login` AS `usuario_login`,
+        `p`.`bairro_nome` AS `bairro_nome`,
+        `bc`.`cidade_nome` AS `cidade_nome`,
+        `bc`.`cidade_estado` AS `cidade_estado`,
+        `bc`.`cidade_latitude` AS `cidade_latitude`,
+        `bc`.`cidade_longitude` AS `cidade_longitude`,
+        `u`.`senha` AS `senha`,
+        `u`.`tipo_usuario_nome` AS `tipo_usuario_nome`
+    FROM
+        (((`pessoa` `p`
+        JOIN `bairro_cidade` `bc` ON ((`p`.`bairro_nome` = `bc`.`bairro_nome`)))
+        LEFT JOIN `usuario` `u` ON ((`p`.`usuario_login` = `u`.`login`)))
+        LEFT JOIN `tipo_usuario` `tu` ON ((`u`.`tipo_usuario_nome` = `tu`.`nome`)));
+        
+CREATE 
+VIEW `posto_completo` AS
+    SELECT 
+        `p`.`cnpj` AS `cnpj`,
+        `p`.`razao_social` AS `razao_social`,
+        `p`.`nome_fantasia` AS `nome_fantasia`,
+        `p`.`latitude` AS `latitude`,
+        `p`.`longitude` AS `longitude`,
+        `p`.`endereco` AS `endereco`,
+        `p`.`telefone` AS `telefone`,
+        `bc`.`bairro_nome` AS `bairro_nome`,
+        `bc`.`cidade_nome` AS `cidade_nome`,
+        `bc`.`cidade_estado` AS `cidade_estado`,
+        `bc`.`cidade_latitude` AS `cidade_latitude`,
+        `bc`.`cidade_longitude` AS `cidade_longitude`,
+        `b`.`nome` AS `bandeira_nome`,
+        `b`.`url` AS `bandeira_url`
+    FROM
+        ((`posto` `p`
+        LEFT JOIN `bairro_cidade` `bc` ON ((`p`.`bairro_nome` = `bc`.`bairro_nome`)))
+        LEFT JOIN `bandeira` `b` ON ((`p`.`bandeira_nome` = `b`.`nome`)));
