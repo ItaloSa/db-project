@@ -108,15 +108,17 @@ class PrecoDao{
         return $preco;
     }
 
-    public function delete(Preco $preco) {
+    public function delete($momento) {
         $sql = "
             DELETE FROM preco
             WHERE momento = :momento
         ";
 
         $dataBase = DataBase::getInstance();
-        $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':momento', $preco->getMomento());
+		$stmt = $dataBase->prepare($sql);
+		$momento = str_replace("Z", "", $momento);
+		$momento = new \DateTime($momento, new \DateTimeZone('UTC'));
+        $stmt->bindValue(':momento', $momento->format('Y-m-d H:i:s'));
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);

@@ -112,10 +112,8 @@ class PrecoCtrl{
             throw new Exception("Data can't be empty");
         }
         try {
-            $preco = new Preco();
-            $preco->setMomento($momento);
             $precoDao = new PrecoDao();
-            return $precoDao->delete($preco);
+            return $precoDao->delete($momento);
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
