@@ -9,18 +9,19 @@ use app\postoCombustivel\PostoCombustivel as PostoCombustivel;
 
 use app\posto\Posto as Posto;
 use app\combustivel\Combustivel as Combustivel;
+use app\posto\PostoDao as PostoDao;
 
 use app\util\DataBase as DataBase;
 
 class PostoCombustivelDao{
 
-	public function insert(PostoCombustivel $posto_combustivel){
+	public function insert(PostoCombustivel $postoCombustivel){
 		$sql = "
-			INSERT INTO postoCombustivel (
-				posto_combustivel, 
+			INSERT INTO posto_combustivel (
+				posto_cnpj, 
 				combustivel_nome
 			) VALUES (
-				:posto_combustivel, 
+				:posto_cnpj, 
 				:combustivel_nome
 			)
 		";
@@ -36,13 +37,19 @@ class PostoCombustivelDao{
 
 	public function get(PostoCombustivel $postoCombustivel){
 		$sql = "
-			SELECT * FROM postoCombustivel
-			WHERE posto_combustivel = :posto_combustivel
+			SELECT * FROM posto_combustivel pc
+			JOIN combustivel c
+				ON pc.combustivel_nome = c.nome
+			JOIN posto_completo poc
+				ON pc.posto_cnpj = poc.cnpj
+			WHERE pc.combustivel_nome = :combustivel_nome
+			AND pc.posto_cnpj = :posto_cnpj
 		";
 
 		$dataBase = DataBase::getInstance();
 		$stmt = $dataBase->prepare($sql);
-		$stmt->bindValue(':posto_combustivel', $postoCombustivel->getPosto());
+		$stmt->bindValue(':combustivel_nome', $postoCombustivel->getCombustivel()->getNome());                
+        $stmt->bindValue(':posto_cnpj', $postoCombustivel->getPosto()->getCnpj());     
 		$stmt->execute();
 		if ($stmt->rowCount() < 1){
 			throw new Exception("Not found", 404);
@@ -55,7 +62,11 @@ class PostoCombustivelDao{
 
 	public function getAll(){
 		$sql = "
-			SELECT * FROM postoCombustivel
+			SELECT * FROM posto_combustivel pc
+			JOIN combustivel c
+				ON pc.combustivel_nome = c.nome
+			JOIN posto_completo poc
+				ON pc.posto_cnpj = poc.cnpj
 		";
 
 		$dataBase = DataBase::getInstance();
@@ -77,18 +88,20 @@ class PostoCombustivelDao{
 		return $postosCombustiveis;
 	}
 
-	public function update($posto_combustivel, PostoCombustivel $postoCombustivel) {
+	public function update($combustivelNome, $postoCnpj, PostoCombustivel $postoCombustivel) {
         $sql = "
-            UPDATE postoCombustivel SET 
-				posto_combustivel = :posto_combustivel,
-				combustivel_nome = :combustivel_nome
-            WHERE posto_combustivel = :old_posto
+            UPDATE posto_combustivel SET 
+				combustivel_nome = :combustivel_nome,
+				posto_cnpj = :posto_cnpj
+			WHERE combustivel_nome = :combustivel_nome_old
+			AND posto_cnpj = :posto_cnpj_old
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
         $stmt = $this->bindValues($stmt, $postoCombustivel);
-        $stmt->bindValue(':old_posto', $posto_combustivel);                
+        $stmt->bindValue(':combustivel_nome_old', $combustivelNome);                
+        $stmt->bindValue(':posto_cnpj_old', $postoCnpj);                
         $stmt->execute();
         $posto_combustivel = $this->get($postoCombustivel);
         return $postoCombustivel;
@@ -97,7 +110,7 @@ class PostoCombustivelDao{
     public function delete(PostoCombustivel $postoCombustivel){
 		$sql = "
 			DELETE FROM postoCombustivel
-			WHERE posto_combustivel = :posto_combustivel
+			WHERE posto_cnpj = :posto_cnpj
 		";
 
 		$dataBase = DataBase::getInstance();
@@ -111,38 +124,23 @@ class PostoCombustivelDao{
 
 	private function populatePostoCombustivel($data): PostoCombustivel {
 		$postoCombustivel = new PostoCombustivel();
-		$postoCombustivel->setCombustivel($data['combustivel_nome']);
 	
-		if (isset($data['posto_combustivel'])) {
-			$posto = new Posto();
-			$posto->setCnpj($data['cnpj']);
-			$posto->setRazaoSocial($data['razaoSocial']);
-			$posto->setNomeFantasia($data['nomeFantasia']);
-			$posto->setLatitude($data['latitude']);
-			$posto->setLongitude($data['longitude']);
-			$posto->setEndereco($data['endereco']);
-			$posto->setTelefone($data['telefone']);
-			$posto->setBandeira($data['bandeira']);
-			$posto->setBairro($data['bairro']);
-			$postoCombustivel->setPosto($posto);
-		}
-		if (isset($data['combustivel_nome'])) {
-			$combustivel = new Combustivel();
-			$combustivel->setNome($data['nome']);			
-			$postoCombustivel->setCombustivel($combustivel);
-		}
+		$postoDao = new PostoDao();
+		$posto = $postoDao->populatePosto($data);
+		$postoCombustivel->setPosto($posto);
+
+		$combustivel = new Combustivel();
+		$combustivel->setNome($data['nome']);			
+		$postoCombustivel->setCombustivel($combustivel);
+		
 		return $postoCombustivel;
 	}
 
 	private function bindValues($stmt, PostoCombustivel $postoCombustivel) {
-		$stmt->bindValue(':posto_combustivel', $postoCombustivel->getPosto());
-		$stmt->bindValue(':combustivel_nome', $postoCombustivel->getCombustivel());
+		$stmt->bindValue(':posto_cnpj', $postoCombustivel->getPosto()->getCnpj());
+		$stmt->bindValue(':combustivel_nome', $postoCombustivel->getCombustivel()->getNome());
 		
 		return $stmt;
 	}
-
-
-
-
-
+	
 }

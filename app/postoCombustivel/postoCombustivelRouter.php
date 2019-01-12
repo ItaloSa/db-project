@@ -25,7 +25,7 @@ class PostoCombustivelRouter {
                 $postoCombustivelCtrl = new PostoCombustivelCtrl();
                 try {
                     $postoCombustivel = $postoCombustivelCtrl->create($request->getParsedBody());
-                    return $response->withJson($posto->json(), 201);
+                    return $response->withJson($postoCombustivel->json(), 201);
                 } catch (Exception $e) {
                     return $response->withJson(["Error" => $e->getMessage()], 400);
                 }
@@ -53,10 +53,10 @@ class PostoCombustivelRouter {
 
     private function update() {
         $this->app->group('/postosCombustiveis', function () {
-            $this->put('/{posto}', function (Request $request, Response $response, array $args) {
+            $this->put('/{combustivelNome}_{postoCnpj}', function (Request $request, Response $response, array $args) {
                 $postoCombustivelCtrl = new PostoCombustivelCtrl();
                 try {
-                    $postoCombustivel = $postoCombustivelCtrl->update($args['posto'], $request->getParsedBody());
+                    $postoCombustivel = $postoCombustivelCtrl->update($args['combustivelNome'], $args['postoCnpj'], $request->getParsedBody());
                     return $response->withJson($postoCombustivel->json(), 200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {

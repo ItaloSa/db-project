@@ -6,10 +6,12 @@ use \Exception as Exception;
 use \Error as Error;
 use Monolog\Registry as Registry;
 
-use app\postoCombustivel\postoCombustivel as PostoCombustivel;
+use app\postoCombustivel\PostoCombustivel as PostoCombustivel;
 use app\postoCombustivel\PostoCombustivelDao as PostoCombustivelDao;
 use app\posto\PostoCtrl as PostoCtrl;
+use app\posto\Posto as Posto;
 use app\combustivel\CombustivelCtrl as CombustivelCtrl;
+use app\combustivel\Combustivel as Combustivel;
 
 class PostoCombustivelCtrl{
 
@@ -81,7 +83,7 @@ class PostoCombustivelCtrl{
         }
     }
 
-    public function update($posto, $data) {
+    public function update($combustivelNome, $postoCnpj, $data) {
         if ($data == null) {
             throw new Exception("Data can't be empty");
         }
@@ -89,9 +91,10 @@ class PostoCombustivelCtrl{
         try {
             $postoCombustivel = $this->mountPostoCombustivel($data);
             $postoCombustivelDao = new PostoCombustivelDao();
-            $postoCombustivel = $postoCombustivelDao->update($postoCombustivel, $postoCombustivel);
+            $postoCombustivel = $postoCombustivelDao->update($combustivelNome, $postoCnpj, $postoCombustivel);
             return $postoCombustivel;
         } catch (Error $e) {
+            var_dump($e); die();
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
@@ -128,26 +131,17 @@ class PostoCombustivelCtrl{
         }
     }
 
-    public function mountPosto($data): PostoCombustivel {
+    public function mountPostoCombustivel($data): PostoCombustivel {
         $postoCombustivel = new PostoCombustivel();
-        if (isset($data['posto_combustivel'])) {
-			$posto = new Posto();
-			$posto->setCnpj($data['cnpj']);
-			$posto->setRazaoSocial($data['razaoSocial']);
-			$posto->setNomeFantasia($data['nomeFantasia']);
-			$posto->setLatitude($data['latitude']);
-			$posto->setLongitude($data['longitude']);
-			$posto->setEndereco($data['endereco']);
-			$posto->setTelefone($data['telefone']);
-			$posto->setBandeira($data['bandeira']);
-			$posto->setBairro($data['bairro']);
-			$postoCombustivel->setPosto($posto);
-		}
-		if (isset($data['combustivel_nome'])) {
-			$combustivel = new Combustivel();
-			$combustivel->setNome($data['nome']);			
-			$postoCombustivel->setCombustivel($combustivel);
-		}
+
+        $postoCtrl = new PostoCtrl();
+        $posto = $postoCtrl->mountPosto($data['posto']);
+        $postoCombustivel->setPosto($posto);
+
+        $combustivel = new Combustivel();
+        $combustivel->setNome($data['combustivel']['nome']);			
+        $postoCombustivel->setCombustivel($combustivel);
+		
 		return $postoCombustivel;
     }
 

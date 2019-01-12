@@ -31,7 +31,7 @@ class PostoCombustivel {
         return $this->combustivel;
     }
 
-    public function setCombustivel(Combustivel $combustivel {
+    public function setCombustivel(Combustivel $combustivel) {
         $this->combustivel = $combustivel;
     }
 
