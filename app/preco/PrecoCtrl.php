@@ -9,6 +9,8 @@ use Monolog\Registry as Registry;
 use app\preco\Preco as Preco;
 use app\posto\PostoCtrl as PostoCtrl;
 use app\combustivel\CombustivelCtrl as CombustivelCtrl;
+use app\postoCombustivel\PostoCombustivelCtrl as PostoCombustivelCtrl;
+
 
 class PrecoCtrl{
 
@@ -26,6 +28,7 @@ class PrecoCtrl{
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
+            var_dump($e->errorInfo);die();
             if ($e->errorInfo[1] == 1452) {
                 throw new Exception("Can't Create");
             } else if ($e->errorInfo[1] == 1062) {
@@ -87,7 +90,7 @@ class PrecoCtrl{
 
         try {
             $preco = $this->mountPreco($data);
-            $postoDao = new PrecoDao();
+            $precoDao = new PrecoDao();
             $preco = $precoDao->update($momento, $preco);
             return $preco;
         } catch (Error $e) {
@@ -130,14 +133,12 @@ class PrecoCtrl{
     public function mountPreco($data): Preco {
         $preco = new Preco;
 		$preco->setMomento($data['momento']);
-		$preco->setValor($data['valor']);
-		if (isset($data['postoCombustivel'])) {
-			$postoCombustivel = new postoCombustivel();
-			$postoCombustivel->setPosto($data['posto']);
-			$postoCombustivel->setCombustivel($data['combustivel']);
-			$preco->setPostoCombutivel($postoCombustivel);
-		}
-		
+        $preco->setValor($data['valor']);
+        
+        $postoCombustivelCtrl = new PostoCombustivelCtrl();
+        $postoCombustivel = $postoCombustivelCtrl->mountPostoCombustivel($data['postoCombustivel']);
+        $preco->setPostoCombustivel($postoCombustivel);
+				
 		return $preco;
     }
 

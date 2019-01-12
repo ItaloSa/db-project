@@ -12,6 +12,9 @@ class Preco{
 	
 
 	public function json() {
+        $momento = json_encode($this->momento);
+        $momento = json_decode($momento);
+        $this->momento = $momento->date;
         if (isset($this->postoCombustivel)) {
             $this->postoCombustivel = $this->postoCombustivel->json();
         }
@@ -19,19 +22,26 @@ class Preco{
         return get_object_vars($this);
     }
 
-    public function setMomento(string $momemto) {
-        $this->momemto = $momemto;
+    public function getMomento() {
+        return $this->momento;
     }
 
-    public function getMomento(): string {
-        return $this->momemto;
+    public function setMomento($momento) {
+        $momento = str_replace("Z", "", $momento);
+        $date = new \DateTime($momento, new \DateTimeZone('UTC'));
+        $this->momento = $date;
     }
 
-    public function setValor(string $valor) {
+    public function setMomentoFromBanco($momento) {
+        $dt = new \DateTime($momento);
+        $this->momento = $dt;
+    }
+
+    public function setValor($valor) {
         $this->valor = $valor;
     }
 
-    public function getValor(): string {
+    public function getValor() {
         return $this->valor;
     }
 
@@ -42,14 +52,5 @@ class Preco{
     public function getPostoCombustivel(): PostoCombustivel{
         return $this->postoCombustivel;
     }
-
-    
-
-
-
-
-
-
-
 
 }
