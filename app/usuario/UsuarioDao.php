@@ -97,8 +97,11 @@ class UsuarioDao{
         $stmt = $dataBase->prepare($sql);
         $stmt->bindValue(':login', $usuario->getLogin());
         $stmt->bindValue(':senha', $usuario->getSenha());
-        $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
-        
+        if ($usuario->getTipoUsuario() != null) {
+            $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
+        } else {
+            $stmt->bindValue(':tipo_usuario_nome', null);
+        }        
         
         $stmt->execute();
         $usuario = $this->get($usuario);
