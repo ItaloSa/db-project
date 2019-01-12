@@ -202,6 +202,7 @@ class EnderecoDao {
     public function updateBairro($nome, Bairro $bairro) {
         $sql = "
             UPDATE bairro SET 
+                nome = :nome,
                 cidade_nome = :cidade_nome,
                 cidade_estado = :cidade_estado
             WHERE nome = :nome_old
@@ -210,9 +211,9 @@ class EnderecoDao {
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
 
+        $stmt->bindValue(':nome', $bairro->getNome());
         $stmt->bindValue(':cidade_nome', $bairro->getCidade()->getNome());
         $stmt->bindValue(':cidade_estado', $bairro->getCidade()->getEstado());
-        $stmt->bindValue(':nome', $bairro->getNome());
         $stmt->bindValue(':nome_old', $nome);
         
         $stmt->execute();

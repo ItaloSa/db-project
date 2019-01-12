@@ -209,7 +209,6 @@ class EnderecoCtrl {
 
         try {
             $bairro = $this->mountBairro($data);
-            $bairro->setNome($nome);
             $enderecoDao = new EnderecoDao();
             $bairro = $enderecoDao->updateBairro($nome, $bairro);
             return $bairro;
