@@ -114,8 +114,16 @@ class VeiculoDao {
 
     private function bindValues($stmt, Veiculo $veiculo) {
         $stmt->bindValue(':placa', $veiculo->getPlaca());
-        $stmt->bindValue(':marca', $veiculo->getMarca());
-        $stmt->bindValue(':modelo', $veiculo->getModelo());
+        if ($veiculo->getMarca() != null) {
+            $stmt->bindValue(':marca', $veiculo->getMarca());
+        } else {
+            $stmt->bindValue(':marca', null);
+        }
+        if ($veiculo->getModelo()) {
+            $stmt->bindValue(':modelo', $veiculo->getModelo());
+        } else {
+            $stmt->bindValue(':modelo', null);            
+        }
         $stmt->bindValue(':pessoa_login', $veiculo->getPessoa()->getLogin());
         return $stmt;
     }
@@ -123,8 +131,12 @@ class VeiculoDao {
     public function populateVeiculo($data) {
         $veiculo = new Veiculo();
         $veiculo->setPlaca($data['placa']);
-        $veiculo->setMarca($data['marca']);
-        $veiculo->setModelo($data['modelo']);
+        if (isset($data['marca'])) {
+            $veiculo->setMarca($data['marca']);
+        }
+        if (isset($data['modelo'])) {
+            $veiculo->setModelo($data['modelo']);
+        }
 
         $pessoaDao = new PessoaDao();
         $pessoa = $pessoaDao->populatePessoa($data);

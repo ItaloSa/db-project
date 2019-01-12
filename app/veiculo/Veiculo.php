@@ -15,7 +15,7 @@ class Veiculo {
         return get_object_vars($this);
     }
 
-    public function getPlaca(): string {
+    public function getPlaca() {
         return $this->placa;
     }
 
@@ -23,7 +23,7 @@ class Veiculo {
         $this->placa = $placa;
     }
 
-    public function getMarca(): string {
+    public function getMarca() {
         return $this->marca;
     }
 
@@ -31,7 +31,7 @@ class Veiculo {
         $this->marca = $marca;
     }
 
-    public function getModelo(): string {
+    public function getModelo() {
         return $this->modelo;
     }
 

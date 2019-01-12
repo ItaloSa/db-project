@@ -110,8 +110,12 @@ class VeiculoCtrl {
     private function mountVeiculo($data): Veiculo {
         $veiculo = new Veiculo();
         $veiculo->setPlaca($data['placa']);
-        $veiculo->setMarca($data['marca']);
-        $veiculo->setModelo($data['modelo']);
+        if (isset($data['marca'])) {
+            $veiculo->setMarca($data['marca']);
+        }
+        if (isset($data['modelo'])) {
+            $veiculo->setModelo($data['modelo']);
+        }
 
         $pessoaCtrl = new PessoaCtrl();
         $pessoa = $pessoaCtrl->mountPessoa($data['pessoa']);
