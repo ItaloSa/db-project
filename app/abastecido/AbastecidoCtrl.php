@@ -10,7 +10,9 @@ use app\abastecido\Abastecido as Abastecido;
 use app\abastecido\AbastecidoDao as AbastecidoDao;
 use app\veiculo\VeiculoDao as VeiculoDao;
 use app\combustivel\CombustivelCtrl as CombustivelCtrl;
+use app\combustivel\Combustivel as Combustivel;
 use app\veiculo\VeiculoCtrl as VeiculoCtrl;
+
 
 class AbastecidoCtrl{
 
@@ -28,6 +30,7 @@ class AbastecidoCtrl{
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
+            var_dump($e->errorInfo);die();
             if ($e->errorInfo[1] == 1452) {
                 throw new Exception("Can't Create");
             } else if ($e->errorInfo[1] == 1062) {
@@ -127,11 +130,8 @@ class AbastecidoCtrl{
         }
 
         try {
-            $abastecido = new Abastecido();
-            $abastecido->setCombustivel($combustivel_nome);
-            $abastecido->setVeiculo($veiculo_placa);
             $abastecidoDao = new AbastecidoDao();
-            return $abastecidoDao->delete($abastecido;
+            return $abastecidoDao->delete($combustivel_nome, $veiculo_placa);
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
@@ -147,14 +147,14 @@ class AbastecidoCtrl{
 
     private function mountAbastecido($data): Abastecido {
         $abastecido = new Abastecido();
-        $veiculoDao = new VeiculoDao();
-		$veiculo = $veiculoDao->populateVeiculo($data);
+        $veiculoDao = new VeiculoCtrl();
+        $veiculo = $veiculoDao->mountVeiculo($data['veiculo']);
 		$abastecido->setVeiculo($veiculo);
 
 		$combustivel = new Combustivel();
-		$combustivel->setNome($data['nome']);			
+		$combustivel->setNome($data['combustivel']['nome']);			
 		$abastecido->setCombustivel($combustivel);
-        return $usuario;
+        return $abastecido;
     }
 
 

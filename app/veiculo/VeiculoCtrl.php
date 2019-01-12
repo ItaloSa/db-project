@@ -107,7 +107,7 @@ class VeiculoCtrl {
         }
     }
 
-    private function mountVeiculo($data): Veiculo {
+    public function mountVeiculo($data): Veiculo {
         $veiculo = new Veiculo();
         $veiculo->setPlaca($data['placa']);
         if (isset($data['marca'])) {

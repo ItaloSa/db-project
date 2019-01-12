@@ -24,7 +24,6 @@ class AbastecidoDao{
 			) VALUES (
 				:combustivel_nome, 
 				:veiculo_placa
-				
 			)
 		";
 
@@ -122,8 +121,8 @@ class AbastecidoDao{
 		";
 
 		$dataBase = DataBase::getInstance();
-        $stmt = $dataBase->prepare($sql);
-       $stmt->bindValue(':combustivel_nome', $combustivelNome);
+		$stmt = $dataBase->prepare($sql);
+       	$stmt->bindValue(':combustivel_nome', $combustivel_nome);
         $stmt->bindValue(':veiculo_placa', $veiculo_placa);
 
         $stmt->execute();

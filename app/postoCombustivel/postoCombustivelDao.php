@@ -124,7 +124,7 @@ class PostoCombustivelDao{
         }
 	}
 
-	private function populatePostoCombustivel($data): PostoCombustivel {
+	public function populatePostoCombustivel($data): PostoCombustivel {
 		$postoCombustivel = new PostoCombustivel();
 	
 		$postoDao = new PostoDao();
