@@ -125,7 +125,7 @@ class ComentarioDao{
     public function bindValues($stmt, Comentario $comentario) {
         $stmt->bindValue(':posto_cnpj', $comentario->getPosto()->getCnpj());
         $stmt->bindValue(':pessoa_login', $comentario->getPessoa()->getLogin());
-        $stmt->bindValue(':momento', $comentario->getMomento());
+        $stmt->bindValue(':momento', $comentario->getMomento()->format('Y-m-d H:i:s'));
         return $stmt;
     }
 

@@ -41,9 +41,9 @@ class Comentario {
     }
 
     public function setMomento($momento) {
-        $dto = \DateTime::createFromFormat(\DateTime::ATOM, $momento);
-        $formattedDate = $dto->format('Y-m-d H:i:s');
-        $this->momento = $formattedDate;
+        $momento = str_replace("Z", "", $momento);
+        $date = new \DateTime($momento, new \DateTimeZone('UTC'));
+        $this->momento = $date;
     }
 
     public function setMomentoFromBanco($momento) {
