@@ -128,7 +128,7 @@ class PostoDao {
         }
 	}
 
-	private function populatePosto($data): Posto {
+	public function populatePosto($data): Posto {
 		$posto = new Posto();
 		$posto->setCnpj($data['cnpj']);
 		$posto->setRazaoSocial($data['razao_social']);

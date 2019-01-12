@@ -53,10 +53,10 @@ class ComentarioRouter {
 
     private function update() {
         $this->app->group('/comentarios', function () {
-            $this->put('/{pessoa_login}', function (Request $request, Response $response, array $args) {
+            $this->put('/{pessoaLogin}_{postoCnpj}', function (Request $request, Response $response, array $args) {
                 $comentarioCtrl = new ComentarioCtrl();
                 try {
-                    $comentario = $comentarioCtrl->update($args['pessoa_login'], $request->getParsedBody());
+                    $comentario = $comentarioCtrl->update($args['pessoaLogin'], $args['postoCnpj'], $request->getParsedBody());
                     return $response->withJson($comentario->json(), 200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {
@@ -71,10 +71,10 @@ class ComentarioRouter {
 
     private function delete() {
         $this->app->group('/comentarios', function () {
-            $this->delete('/{pessoa_login}', function (Request $request, Response $response, array $args) {
+            $this->delete('/{pessoaLogin}_{postoCnpj}', function (Request $request, Response $response, array $args) {
                 $comentarioCtrl = new ComentarioCtrl();
                 try {
-                    $comentarioCtrl->delete($args['pessoa_login']);
+                    $comentarioCtrl->delete($args['postoCnpj'], $args['pessoaLogin']);
                     return $response->withStatus(200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {

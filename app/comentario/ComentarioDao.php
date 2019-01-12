@@ -8,6 +8,8 @@ use \Exception as Exception;
 use app\util\DataBase as DataBase;
 
 use app\comentario\Comentario as Comentario;
+use app\pessoa\PessoaDao as PessoaDao;
+use app\posto\PostoDao as PostoDao;
 
 class ComentarioDao{
 
@@ -16,40 +18,37 @@ class ComentarioDao{
             INSERT INTO comentario (
                 posto_cnpj,
                 pessoa_login,
-                combustivel_nome
+                momento
             ) VALUES (
                 :posto_cnpj,
                 :pessoa_login,
-                :combustivel_nome
+                :momento
             )
         ";
-
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-
-        $stmt->bindValue(':posto_cnpj', $comentario->getPostoCnpj());
-        $stmt->bindValue(':pessoa_login', $comentario->getPessoaLogin());
-        $stmt->bindValue(':combustivel_nome', $comentario->getCombustivelNome);
-        
-
+        $stmt = $this->bindValues($stmt, $comentario);
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
             throw new Exception("Can't create");
         }
-
-
     }
 
     public function get(Comentario $comentario) {
         $sql = "
-            SELECT * FROM comentario
+            SELECT * FROM comentario c
+            LEFT JOIN posto_completo pc
+                ON c.posto_cnpj = pc.cnpj
+            LEFT JOIN pessoa_completa pec
+                ON c.pessoa_login = pec.login
             WHERE pessoa_login = :pessoa_login
+            AND posto_cnpj = :posto_cnpj
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':pessoa_login', $comentario->getPessoaLogin());
-
+        $stmt->bindValue(':pessoa_login', $comentario->getPessoa()->getLogin());
+        $stmt->bindValue(':posto_cnpj', $comentario->getPosto()->getCnpj());
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
@@ -60,7 +59,11 @@ class ComentarioDao{
 
     public function getAll() {
         $sql = "
-            SELECT * FROM comentario
+            SELECT * FROM comentario c
+            LEFT JOIN posto_completo pc
+                ON c.posto_cnpj = pc.cnpj
+            LEFT JOIN pessoa_completa pec
+                ON c.pessoa_login = pec.login
         ";
 
         $dataBase = DataBase::getInstance();
@@ -81,23 +84,24 @@ class ComentarioDao{
         return $comentarios;
     }
 
-    public function update(Comentario $comentario) {
+    public function update($pessoaLogin, $postoCnpj, Comentario $comentario) {
         $sql = "
             UPDATE comentario SET 
                 posto_cnpj = :posto_cnpj,
-                combustivel_nome = :combustivel_nome
-            WHERE pessoa_login = :pessoa_login
-            
+                pessoa_login = :pessoa_login,
+                momento = :momento
+            WHERE posto_cnpj = :posto_cnpj_old
+            AND pessoa_login = :pessoa_login_old
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':pessoa_login', $comentario->getPessoaLogin());
-        $stmt->bindValue(':senha', $comentario->getPostoCnpj());
-        $stmt->bindValue(':combustivel_nome', $comentario->getCombustivelNome());
-        
-        
-        $stmt->execute();
+        $stmt = $this->bindValues($stmt, $comentario);
+
+        $stmt->bindValue(':posto_cnpj_old', $postoCnpj);
+        $stmt->bindValue(':pessoa_login_old', $pessoaLogin);
+                
+        $result = $stmt->execute();
         $comentario = $this->get($comentario);
         return $comentario;
     }
@@ -105,23 +109,35 @@ class ComentarioDao{
     public function delete(Comentario $comentario) {
         $sql = "
             DELETE FROM comentario
-            WHERE pessoa_login = :pessoa_login
+            WHERE posto_cnpj = :posto_cnpj
+            AND pessoa_login = :pessoa_login
         ";
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':pessoa_login', $comentario->getPessoaLogin());
+        $stmt->bindValue(':posto_cnpj', $comentario->getPosto()->getCnpj());
+        $stmt->bindValue(':pessoa_login', $comentario->getPessoa()->getLogin());
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);
         }
     }
 
+    public function bindValues($stmt, Comentario $comentario) {
+        $stmt->bindValue(':posto_cnpj', $comentario->getPosto()->getCnpj());
+        $stmt->bindValue(':pessoa_login', $comentario->getPessoa()->getLogin());
+        $stmt->bindValue(':momento', $comentario->getMomento());
+        return $stmt;
+    }
+
     private function populateComentario($data): Comentario {
         $comentario = new Comentario();
-        $comentario->setPostoCnpj($data['posto_cnpj']);
-        $comentario->setPessoaLogin($data['pessoa_login']);
-        $comentario->setCombustivelNome($data['combustivel_nome']);
-        
+        $comentario->setMomentoFromBanco($data['momento']);
+        $postoDao = new PostoDao();
+        $posto = $postoDao->populatePosto($data);
+        $comentario->setPosto($posto);
+        $pessoaDao = new PessoaDao();
+        $pessoa = $pessoaDao->populatePessoa($data);
+        $comentario->setPessoa($pessoa);
         return $comentario;
     }
 

@@ -8,6 +8,10 @@ use Monolog\Registry as Registry;
 
 use app\comentario\Comentario as Comentario;
 use app\comentario\ComentarioDao as ComentarioDao;
+use app\pessoa\PessoaCtrl as PessoaCtrl;
+use app\pessoa\Pessoa as Pessoa;
+use app\posto\PostoCtrl as PostoCtrl;
+use app\posto\Posto as Posto;
 
 class ComentarioCtrl {
 
@@ -25,7 +29,9 @@ class ComentarioCtrl {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
-            if ($e->getCode() == "23000") {
+            if ($e->errorInfo[1] == 1452) {
+                throw new Exception("Can't Create");
+            } else if ($e->errorInfo[1] == 1062) {
                 throw new Exception("Duplicate entry");
             } else {
                 Registry::log()->error($e->getMessage());
@@ -57,16 +63,15 @@ class ComentarioCtrl {
         }
     }
 
-    public function update($pessoa_login, $data) {
+    public function update($postoCnpj, $pessoaLogin, $data) {
         if ($data == null) {
             throw new Exception("Data can't be empty");
         }
 
         try {
             $comentario = $this->mountComentario($data);
-            $comentario->setPessoaLogin($pessoa_login);
             $comentarioDao = new ComentarioDao();
-            $comentario = $comentarioDao->update($comentario);
+            $comentario = $comentarioDao->update($postoCnpj, $pessoaLogin, $comentario);
             return $comentario;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
@@ -81,14 +86,17 @@ class ComentarioCtrl {
         }
     }
 
-    public function delete($pessoa_login) {
-        if ($pessoa_login == null) {
-            throw new Exception("Data can't be empty");
-        }
-
+    public function delete($postoCnpj, $pessoaLogin) {
+        
         try {
             $comentario = new Comentario();
-            $comentario->setPessoaLogin($pessoa_login);
+            $posto = new Posto();
+            $posto->setCnpj($postoCnpj);
+            $comentario->setPosto($posto);
+            $pessoa = new Pessoa();
+            $pessoa->setLogin($pessoaLogin);
+            $comentario->setPessoa($pessoa);
+
             $comentarioDao = new ComentarioDao();
             return $comentarioDao->delete($comentario);
         } catch (Error $e) {
@@ -106,9 +114,13 @@ class ComentarioCtrl {
 
     private function mountComentario($data): Comentario {
         $comentario = new Comentario();
-        $comentario->setPessoaLogin($data['pessoa_login']);
-        $comentario->setPostoCnpj($data['posto_cnpj']);
-        $comentario->setCombustivelNome($data['combustivel_nome']);
+        $comentario->setMomento($data['momento']);
+        $pessoaCtrl = new PessoaCtrl();
+        $pessoa = $pessoaCtrl->mountPessoa($data['pessoa']);
+        $comentario->setPessoa($pessoa);
+        $postoCtrl = new PostoCtrl();
+        $posto = $postoCtrl->mountPosto($data['posto']);
+        $comentario->setPosto($posto);
         return $comentario;
     }
 }    

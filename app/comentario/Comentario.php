@@ -2,47 +2,53 @@
 
 namespace app\comentario;
 
-
-
+use app\posto\Posto as Posto;
+use app\pessoa\Pessoa as Pessoa;
+use app\combustivel\Combustivel as Combustivel;
 class Comentario {
 
-	private posto_cnpj;
-	private pessoa_login;
-	private combustivel_nome;
+	private $posto;
+	private $pessoa;
+	private $momento;
 
 	public function json() {
-
+        $momento = json_encode($this->momento);
+        $momento = json_decode($momento);
+        $this->momento = $momento->date;
+        $this->posto = $this->posto->json();
+        $this->pessoa = $this->pessoa->json();
         return get_object_vars($this);
     }
 
-    public function getPostoCnpj(): string {
-        return $this->posto_cnpj;
+    public function getPosto(): Posto {
+        return $this->posto;
     }
 
-    public function setPostoCnpj(string $posto_cnpj) {
-        $this->posto_cnpj = $posto_cnpj;
+    public function setPosto(Posto $posto) {
+        $this->posto = $posto;
     }
 
-    public function getPessoaLogin(): string {
-        return $this->pessoa_login;
+    public function getPessoa(): Pessoa {
+        return $this->pessoa;
     }
 
-    public function setPessoaLogin(string $pessoa_login) {
-        $this->pessoa_login = $pessoa_login;
+    public function setPessoa(Pessoa $pessoa) {
+        $this->pessoa = $pessoa;
     }
 
-    public function getCombustivelNome(): string {
-        return $this->combustivel_nome;
+    public function getMomento() {
+        return $this->momento;
     }
 
-    public function setCombustivelNome(string $combustivel_nome) {
-        $this->combustivel_nome = $combustivel_nome;
+    public function setMomento($momento) {
+        $dto = \DateTime::createFromFormat(\DateTime::ATOM, $momento);
+        $formattedDate = $dto->format('Y-m-d H:i:s');
+        $this->momento = $formattedDate;
     }
 
-
-
-
-
-
+    public function setMomentoFromBanco($momento) {
+        $dt = new \DateTime($momento);
+        $this->momento = $dt;
+    }
 
 }	
