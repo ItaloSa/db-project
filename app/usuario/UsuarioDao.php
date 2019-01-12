@@ -85,18 +85,20 @@ class UsuarioDao{
         return $usuarios;
     }
 
-    public function update(Usuario $usuario) {
+    public function update($login, Usuario $usuario) {
         $sql = "
-            UPDATE usuario SET 
+            UPDATE usuario SET
+                login = :login,
                 senha = :senha,
                 tipo_usuario_nome = :tipo_usuario_nome
-            WHERE login = :login
+            WHERE login = :login_old
             
         ";
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
         $stmt->bindValue(':login', $usuario->getLogin());
         $stmt->bindValue(':senha', $usuario->getSenha());
+        $stmt->bindValue(':login_old', $login);
         if ($usuario->getTipoUsuario() != null) {
             $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
         } else {

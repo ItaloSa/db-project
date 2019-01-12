@@ -67,9 +67,8 @@ class UsuarioCtrl {
 
         try {
             $usuario = $this->mountUsuario($data);
-            $usuario->setLogin($login);
             $usuarioDao = new UsuarioDao();
-            $usuario = $usuarioDao->update($usuario);
+            $usuario = $usuarioDao->update($login, $usuario);
             return $usuario;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
