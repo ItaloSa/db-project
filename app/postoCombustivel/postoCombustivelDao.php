@@ -7,11 +7,14 @@ use \Exception as Exception;
 
 use app\postoCombustivel\PostoCombustivel as PostoCombustivel;
 
+use app\posto\Posto as Posto;
+use app\combustivel\Combustivel as Combustivel;
+
 use app\util\DataBase as DataBase;
 
 class PostoCombustivelDao{
 
-	public function insert(Posto $posto_combustivel){
+	public function insert(PostoCombustivel $posto_combustivel){
 		$sql = "
 			INSERT INTO postoCombustivel (
 				posto_combustivel, 
