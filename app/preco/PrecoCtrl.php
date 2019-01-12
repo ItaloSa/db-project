@@ -131,24 +131,13 @@ class PrecoCtrl{
         $preco = new Preco;
 		$preco->setMomento($data['momento']);
 		$preco->setValor($data['valor']);
-		if (isset($data['posto'])) {
-			$posto = new Posto();
-			$posto->setCnpj($data['cnpj']);
-			$posto->setRazaoSocial($data['razaoSocial']);
-			$posto->setNomeFantasia($data['nomeFantasia']);
-			$posto->setLatitude($data['latitude']);
-			$posto->setLongitude($data['longitude']);
-			$posto->setEndereco($data['endereco']);
-			$posto->setTelefone($data['telefone']);
-			$posto->setBandeira($data['bandeira']);
-			$posto->setBairro($data['bairro']);
-			$preco->setPosto($posto);
+		if (isset($data['postoCombustivel'])) {
+			$postoCombustivel = new postoCombustivel();
+			$postoCombustivel->setPosto($data['posto']);
+			$postoCombustivel->setCombustivel($data['combustivel']);
+			$preco->setPostoCombutivel($postoCombustivel);
 		}
-		if (isset($data['combustivel'])) {
-			$combustivel = new Combustivel();
-			$combustivel->setNome($data['nome']);			
-			$preco->setCombustivel($combustivel);
-		}
+		
 		return $preco;
     }
 

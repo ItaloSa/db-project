@@ -5,10 +5,10 @@ namespace app\preco;
 use\PDO as PDO;
 use \Exception as Exception;
 
-use app\posto\Preco as Preco;
 
-use app\combustivel\Combustivel as Combustivel;
-use app\posto\Posto as Posto;
+
+use app\precoCombustivel\PrecoCombustivel as PrecoCombustivel;
+
 
 use app\util\DataBase as DataBase;
 
@@ -19,13 +19,13 @@ class PrecoDao{
 			INSERT INTO preco (
 				momento,
 				valor,
-				combustivel,
-				posto
+				combustivel_nome,
+				posto_cnpj
 			) VALUES (
 				:momento,
 				:valor,
-				:combustivel,
-				:posto				
+				:combustivel_nome,
+				:posto_cnpj				
 			)
 		";
 
@@ -85,19 +85,19 @@ class PrecoDao{
             UPDATE preco SET 
 				momento = :momento,
 				valor = :valor,
-				combustivel = :combustivel,
-				posto = :posto
+				combustivel_nome = :combustivel_nome,
+				posto_cnpj = :posto_cnpj
 				
             WHERE momento = :old_momento
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt = $this->bindValues($stmt, $posto);
+        $stmt = $this->bindValues($stmt, $preco);
         $stmt->bindValue(':old_momento', $momento);                
         $stmt->execute();
-        $posto = $this->get($posto);
-        return $posto;
+        $preco = $this->get($preco);
+        return $preco;
     }
 
     public function delete(Preco $preco) {
@@ -119,32 +119,25 @@ class PrecoDao{
 		$preco = new Preco;
 		$preco->setMomento($data['momento']);
 		$preco->setValor($data['valor']);
-		if (isset($data['posto'])) {
-			$posto = new Posto();
-			$posto->setCnpj($data['cnpj']);
-			$posto->setRazaoSocial($data['razaoSocial']);
-			$posto->setNomeFantasia($data['nomeFantasia']);
-			$posto->setLatitude($data['latitude']);
-			$posto->setLongitude($data['longitude']);
-			$posto->setEndereco($data['endereco']);
-			$posto->setTelefone($data['telefone']);
-			$posto->setBandeira($data['bandeira']);
-			$posto->setBairro($data['bairro']);
-			$preco->setPosto($posto);
+		if (isset($data['combustivel_nome'])) {
+			$postoCombustivelDao = new postoCombustivelDao();
+			$posto = $postoCombustivelDao->populatePostoCombustivel($data);
+			$preco->setPostoCombustivel($)
+
+			$postoCombustivel->setPosto($data['posto']);
+			$postoCombustivel->setCombustivel($data['combustivel']);
+			
+			$preco->setPostoCombustivel($postoCombustivel);
 		}
-		if (isset($data['combustivel'])) {
-			$combustivel = new Combustivel();
-			$combustivel->setNome($data['nome']);			
-			$preco->setCombustivel($combustivel);
-		}
+		
 		return $preco;
 	}
 
 	private function bindValues($stmt, Preco $preco) {
 		$stmt->bindValue(':momento', $preco->getMomento());
 		$stmt->bindValue(':valor', $preco->getValor());
-		$stmt->bindValue(':combustivel', $preco->getCombustivel());
-		$stmt->bindValue(':posto', $preco->getPosto());
+		$stmt->bindValue(':combustivel_nome', $preco->getPostoCombustivel()->getCombustivel()->getNome());
+		$stmt->bindValue(':posto_cnpj', $preco->getPostoCombustivel()->getPosto()->getCnpj());
 		
 		return $stmt;
 	}
