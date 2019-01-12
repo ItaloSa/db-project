@@ -107,15 +107,17 @@ class PostoCombustivelDao{
         return $postoCombustivel;
     }
 
-    public function delete(PostoCombustivel $postoCombustivel){
+    public function delete($combustivelNome, $postoCnpj){
 		$sql = "
-			DELETE FROM postoCombustivel
-			WHERE posto_cnpj = :posto_cnpj
+			DELETE FROM posto_combustivel
+			WHERE combustivel_nome = :combustivel_nome
+			AND posto_cnpj = :posto_cnpj
 		";
 
 		$dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt->bindValue(':posto', $postoCombustivel->getPosto());
+        $stmt->bindValue(':combustivel_nome', $combustivelNome);
+        $stmt->bindValue(':posto_cnpj', $postoCnpj);
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
             throw new Exception("Not found", 404);

@@ -71,10 +71,10 @@ class PostoCombustivelRouter {
 
     private function delete() {
         $this->app->group('/postosCombustiveis', function () {
-            $this->delete('/{posto}', function (Request $request, Response $response, array $args) {
+            $this->delete('/{combustivelNome}_{postoCnpj}', function (Request $request, Response $response, array $args) {
                 $postoCombustivelCtrl = new PostoCombustivelCtrl();
                 try {
-                    $postoCombustivelCtrl->delete($args['posto']);
+                    $postoCombustivelCtrl->delete($args['combustivelNome'], $args['postoCnpj']);
                     return $response->withStatus(200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {

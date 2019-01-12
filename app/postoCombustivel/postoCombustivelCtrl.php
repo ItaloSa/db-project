@@ -113,15 +113,11 @@ class PostoCombustivelCtrl{
         }
     }
 
-    public function delete($posto) {
-        if ($posto == null) {
-            throw new Exception("Data can't be empty");
-        }
+    public function delete($combustivelNome, $postoCnpj) {
+
         try {
-            $postoCombustivel = new PostoCombustivel();
-            $postoCombustivel->setPosto($posto);
             $postoCombustivelDao = new PostoCombustivelDao();
-            return $postoCombustivelDao->delete($postoCombustivel);
+            return $postoCombustivelDao->delete($combustivelNome, $postoCnpj);
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
