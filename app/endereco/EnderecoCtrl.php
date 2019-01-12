@@ -90,10 +90,8 @@ class EnderecoCtrl {
 
         try {
             $cidade = $this->mountCidade($data);
-            $cidade->setNome($nome);
-            $cidade->setEstado($estado);
             $enderecoDao = new EnderecoDao();
-            $cidade = $enderecoDao->updateCidade($cidade);
+            $cidade = $enderecoDao->updateCidade($nome, $estado, $cidade);
             return $cidade;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());
@@ -213,7 +211,7 @@ class EnderecoCtrl {
             $bairro = $this->mountBairro($data);
             $bairro->setNome($nome);
             $enderecoDao = new EnderecoDao();
-            $bairro = $enderecoDao->updateBairro($bairro);
+            $bairro = $enderecoDao->updateBairro($nome, $bairro);
             return $bairro;
         } catch (Error $e) {
             Registry::log()->error($e->getMessage());

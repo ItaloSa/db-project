@@ -74,22 +74,26 @@ class EnderecoDao {
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\endereco\Cidade');
     }
 
-    public function updateCidade(Cidade $cidade) {
+    public function updateCidade($nome, $estado, Cidade $cidade) {
         $sql = "
             UPDATE cidade SET 
+                nome = :nome,
+                estado = :estado,
                 longitude = :longitude,
                 latitude = :latitude
-            WHERE nome = :nome
-            AND estado = :estado
+            WHERE nome = :nome_old
+            AND estado = :estado_old
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
 
-        $stmt->bindValue(':longitude', $cidade->getLongitude());
-        $stmt->bindValue(':latitude', $cidade->getLatitude());
         $stmt->bindValue(':nome', $cidade->getNome());
         $stmt->bindValue(':estado', $cidade->getEstado());
+        $stmt->bindValue(':longitude', $cidade->getLongitude());
+        $stmt->bindValue(':latitude', $cidade->getLatitude());
+        $stmt->bindValue(':nome_old', $nome);
+        $stmt->bindValue(':estado_old', $estado);
         
         $stmt->execute();
         $cidade = $this->getCidade($cidade);
@@ -195,12 +199,12 @@ class EnderecoDao {
         return $bairros;
     }
 
-    public function updateBairro(Bairro $bairro) {
+    public function updateBairro($nome, Bairro $bairro) {
         $sql = "
             UPDATE bairro SET 
                 cidade_nome = :cidade_nome,
                 cidade_estado = :cidade_estado
-            WHERE nome = :nome
+            WHERE nome = :nome_old
         ";
 
         $dataBase = DataBase::getInstance();
@@ -209,6 +213,7 @@ class EnderecoDao {
         $stmt->bindValue(':cidade_nome', $bairro->getCidade()->getNome());
         $stmt->bindValue(':cidade_estado', $bairro->getCidade()->getEstado());
         $stmt->bindValue(':nome', $bairro->getNome());
+        $stmt->bindValue(':nome_old', $nome);
         
         $stmt->execute();
         $cidade = $this->getBairro($bairro);
