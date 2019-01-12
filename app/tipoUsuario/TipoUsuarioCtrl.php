@@ -27,7 +27,9 @@ class TipoUsuarioCtrl {
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
-            if ($e->getCode() == "23000") {
+            if ($e->errorInfo[1] == 1452) {
+                throw new Exception("Can't Create");
+            } else if ($e->errorInfo[1] == 1062) {
                 throw new Exception("Duplicate entry");
             } else {
                 Registry::log()->error($e->getMessage());
