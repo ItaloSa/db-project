@@ -58,6 +58,21 @@ class TipoUsuarioDao {
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'app\tipoUsuario\TipoUsuario');
     }
 
+    public function update($nome, TipoUsuario $tipoUsuario) {
+        $sql = "
+            UPDATE tipo_usuario SET 
+				nome = :nome
+            WHERE nome = :old_nome
+        ";
+        $dataBase = DataBase::getInstance();
+        $stmt = $dataBase->prepare($sql);
+        $stmt->bindValue(':nome', $tipoUsuario->getNome());        
+        $stmt->bindValue(':old_nome', $nome);                
+        $stmt->execute();
+        $tipoUsuario = $this->get($tipoUsuario);
+        return $tipoUsuario;
+    }
+
     public function delete(TipoUsuario $tipoUsuario) {
         $sql = "
             DELETE FROM tipo_usuario

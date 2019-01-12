@@ -59,6 +59,32 @@ class TipoUsuarioCtrl {
         }
     }
 
+    public function update($nome, $data) {
+        if ($data == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $tipoUsuario = new TipoUsuario();
+            $tipoUsuario->setNome($data['nome']);
+            $tipoUsuarioDao = new TipoUsuarioDao();
+            $tipoUsuario = $tipoUsuarioDao->update($nome, $tipoUsuario);
+            return $tipoUsuario;
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else if ($e->getCode() == 400) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else  {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
     public function delete($nome) {
         if ($nome == null) {
             throw new Exception("Data can't be empty");

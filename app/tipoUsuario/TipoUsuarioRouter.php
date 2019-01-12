@@ -15,6 +15,7 @@ class TipoUsuarioRouter {
         $this->app = $app;
         $this->post();
         $this->get();
+        $this->update();
         $this->delete();
     }
 
@@ -39,6 +40,24 @@ class TipoUsuarioRouter {
                 try {
                     $tiposUsuario = $tipoUsuarioCtrl->getAll();
                     return $response->withJson($tiposUsuario, 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+    }
+
+    private function update() {
+        $this->app->group('/tiposUsuario', function () {
+            $this->put('/{nome}', function (Request $request, Response $response, array $args) {
+                $tipoUsuarioCtrl = new TipoUsuarioCtrl();
+                try {
+                    $tipoUsuario = $tipoUsuarioCtrl->update($args['nome'], $request->getParsedBody());
+                    return $response->withJson($tipoUsuario->json(), 200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {
                         return $response->withJson(["Error" => $e->getMessage()], 404);
