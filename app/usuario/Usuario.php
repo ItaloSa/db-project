@@ -33,7 +33,7 @@ class Usuario {
         $this->senha = $senha;
     }
 
-    public function getTipoUsuario(): TipoUsuario {
+    public function getTipoUsuario() {
         return $this->tipoUsuario;
     }
 

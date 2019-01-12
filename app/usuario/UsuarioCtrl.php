@@ -109,9 +109,11 @@ class UsuarioCtrl {
         $usuario = new Usuario();
         $usuario->setLogin($data['login']);
         $usuario->setSenha($data['senha']);
-        $tipoUsuario = new TipoUsuario();
-        $tipoUsuario->setNome($data['tipoUsuario']['nome']);
-        $usuario->setTipoUsuario($tipoUsuario);
+        if (isset($data['tipoUsuario'])) {
+            $tipoUsuario = new TipoUsuario();
+            $tipoUsuario->setNome($data['tipoUsuario']['nome']);
+            $usuario->setTipoUsuario($tipoUsuario);
+        }
         return $usuario;
     }
 

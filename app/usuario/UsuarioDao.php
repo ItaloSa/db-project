@@ -30,8 +30,11 @@ class UsuarioDao{
 
         $stmt->bindValue(':login', $usuario->getLogin());
         $stmt->bindValue(':senha', $usuario->getSenha());
-        $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
-        
+        if ($usuario->getTipoUsuario() != null) {
+            $stmt->bindValue(':tipo_usuario_nome', $usuario->getTipoUsuario()->getNome());
+        } else {
+            $stmt->bindValue(':tipo_usuario_nome', null);
+        }
 
         $stmt->execute();
         if ($stmt->rowCount() < 1) {
@@ -120,9 +123,11 @@ class UsuarioDao{
         $usuario = new Usuario();
         $usuario->setLogin($data['login']);
         $usuario->setSenha($data['senha']);
-        $tipoUsuario = new TipoUsuario();
-        $tipoUsuario->setNome($data['tipo_usuario_nome']);
-        $usuario->setTipoUsuario($tipoUsuario);
+        if (isset($data['tipo_usuario_nome'])) {
+            $tipoUsuario = new TipoUsuario();
+            $tipoUsuario->setNome($data['tipo_usuario_nome']);
+            $usuario->setTipoUsuario($tipoUsuario);
+        }
         return $usuario;
     }
 
