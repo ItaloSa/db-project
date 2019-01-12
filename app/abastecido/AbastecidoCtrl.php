@@ -30,7 +30,6 @@ class AbastecidoCtrl{
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {
-            var_dump($e->errorInfo);die();
             if ($e->errorInfo[1] == 1452) {
                 throw new Exception("Can't Create");
             } else if ($e->errorInfo[1] == 1062) {

@@ -98,7 +98,6 @@ class PostoCombustivelCtrl{
             $postoCombustivel = $postoCombustivelDao->update($combustivelNome, $postoCnpj, $postoCombustivel);
             return $postoCombustivel;
         } catch (Error $e) {
-            var_dump($e); die();
             Registry::log()->error($e->getMessage());
             throw new Exception("Some data is missing");
         } catch (Exception $e ) {

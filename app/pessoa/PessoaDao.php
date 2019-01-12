@@ -91,7 +91,6 @@ class PessoaDao {
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        // var_dump($pessoa);
         $stmt = $this->bindValues($stmt, $pessoa);
         $stmt->bindValue(':old_login', $login);                
         $stmt->execute();
