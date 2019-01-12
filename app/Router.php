@@ -16,6 +16,7 @@ use app\posto\PostoRouter as PostoRouter;
 use app\combustivel\CombustivelRouter as CombustivelRouter;
 use app\comentario\ComentarioRouter as ComentarioRouter; 
 use app\postoCombustivel\PostoCombustivelRouter as PostoCombustivelRouter; 
+use app\abastecido\AbastecidoRouter as AbastecidoRouter; 
 
 class Router {
     private $app;
@@ -33,6 +34,7 @@ class Router {
         $this->combustivel();
         $this->comentario();
         $this->postoCombustivel();
+        $this->abastecido();
     }
 
     private function root() {
@@ -81,6 +83,10 @@ class Router {
 
     private function postoCombustivel() {
         $postoCombustivelRouter = new PostoCombustivelRouter($this->app);
+    }
+
+    private function abastecido() {
+        $abastecidoRouter = new AbastecidoRouter($this->app);
     }
 
 } 

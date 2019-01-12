@@ -39,14 +39,21 @@ class AbastecidoDao{
 
 	public function get(Abastecido $abastecido){
 		$sql = "
-			SELECT * FROM abastecido
-
-			WHERE combustivel_nome = :combustivel_nome
+			SELECT * FROM abastecido a
+			JOIN veiculo v
+				ON a.veiculo_placa = v.placa
+			JOIN pessoa_completa pc
+				ON v.pessoa_login = pc.login
+			JOIN combustivel c
+				ON a.combustivel_nome = c.nome
+			WHERE a.combustivel_nome = :combustivel_nome
+			AND a.veiculo_placa = :veiculo_placa
 		";
 
 		$dataBase = DataBase::getInstance();
 		$stmt = $dataBase->prepare($sql);
-		$stmt->bindValue(':combustivel_nome', $abastecido->getCombustivel());
+		$stmt->bindValue(':combustivel_nome', $abastecido->getCombustivel()->getNome());
+		$stmt->bindValue(':veiculo_placa', $abastecido->getVeiculo()->getPlaca());
 		$stmt->execute();
 		if ($stmt->rowCount() < 1){
 			throw new Exception("Not found", 404);
@@ -58,7 +65,13 @@ class AbastecidoDao{
 
 	public function getAll(){
 		$sql = "
-			SELECT * FROM abastecido
+			SELECT * FROM abastecido a
+			JOIN veiculo v
+				ON a.veiculo_placa = v.placa
+			JOIN pessoa_completa pc
+				ON v.pessoa_login = pc.login
+			JOIN combustivel c
+				ON a.combustivel_nome = c.nome
 		";
 
 		$dataBase = DataBase::getInstance();
@@ -80,24 +93,24 @@ class AbastecidoDao{
 		return $abastecidos;
 	}
 
-	public function update($combustivel_nome, $veiculo_placa Abastecido $abastecido) {
+	public function update($combustivel_nome, $veiculo_placa, Abastecido $abastecido) {
         $sql = "
             UPDATE abastecido SET 
 				combustivel_nome = :combustivel_nome,
 				veiculo_placa = :veiculo_placa
 				
-            WHERE combustivel_nome = :old_combustivel_nome
-            AND veiculo_placa = :veiculo_placa
+            WHERE combustivel_nome = :combustivel_nome_old
+            AND veiculo_placa = :veiculo_placa_old
         ";
 
         $dataBase = DataBase::getInstance();
         $stmt = $dataBase->prepare($sql);
-        $stmt = $this->bindValues($stmt, $abastecido;
-        $stmt->bindValue(':old_combustivel_nome', $combustivel_nome);   
-        $stmt->bindValue(':old_veiculo_placa', $veiculo_placa);             
+        $stmt = $this->bindValues($stmt, $abastecido);
+        $stmt->bindValue(':combustivel_nome_old', $combustivel_nome);   
+        $stmt->bindValue(':veiculo_placa_old', $veiculo_placa);             
         $stmt->execute();
-        $abastecido= $this->get($abastecido;
-        return $abastecido
+        $abastecido= $this->get($abastecido);
+        return $abastecido;
     }
 
     public function delete($combustivel_nome, $veiculo_placa){
@@ -122,7 +135,6 @@ class AbastecidoDao{
 	public function populateAbastecido($data): Abastecido {
 		$abastecido= new Abastecido();
 
-
 		$veiculoDao = new VeiculoDao();
 		$veiculo = $veiculoDao->populateVeiculo($data);
 		$abastecido->setVeiculo($veiculo);
@@ -140,15 +152,6 @@ class AbastecidoDao{
 		$stmt->bindValue(':veiculo_placa', $abastecido->getVeiculo()->getPlaca());
 		
 		return $stmt;
-		
+	}
 	
-
-
-
-
-
-
-
-
-
 }

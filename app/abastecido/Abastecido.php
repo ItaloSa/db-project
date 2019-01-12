@@ -36,9 +36,4 @@ class Abastecido{
         $this->veiculo = $veiculo;
     }
 
-
-
-
-
-
 }
