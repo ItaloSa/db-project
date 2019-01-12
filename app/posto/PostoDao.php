@@ -132,11 +132,15 @@ class PostoDao {
 		$posto = new Posto();
 		$posto->setCnpj($data['cnpj']);
 		$posto->setRazaoSocial($data['razao_social']);
-		$posto->setNomeFantasia($data['nome_fantasia']);
+		if (isset($data['nome_fantasia'])) {
+			$posto->setNomeFantasia($data['nome_fantasia']);
+		}
 		$posto->setLatitude($data['latitude']);
 		$posto->setLongitude($data['longitude']);
 		$posto->setEndereco($data['endereco']);
-		$posto->setTelefone($data['telefone']);
+		if (isset($data['telefone'])) {
+			$posto->setTelefone($data['telefone']);
+		}
 		if (isset($data['bandeira_nome'])) {
 			$bandeira = new Bandeira();
 			$bandeira->setNome($data['bandeira_nome']);
@@ -154,13 +158,29 @@ class PostoDao {
 	private function bindValues($stmt, Posto $posto) {
 		$stmt->bindValue(':cnpj', $posto->getCnpj());
 		$stmt->bindValue(':razao_social', $posto->getRazaoSocial());
-		$stmt->bindValue(':nome_fantasia', $posto->getNomeFantasia());
+		if ($posto->getNomeFantasia() != null) {
+			$stmt->bindValue(':nome_fantasia', $posto->getNomeFantasia());
+		} else {
+			$stmt->bindValue(':nome_fantasia', null);
+		}
 		$stmt->bindValue(':latitude', $posto->getLatitude());
 		$stmt->bindValue(':longitude', $posto->getLongitude());
 		$stmt->bindValue(':endereco', $posto->getEndereco());
-		$stmt->bindValue(':telefone', $posto->getTelefone());
-		$stmt->bindValue(':bandeira_nome', $posto->getBandeira()->getNome());
-		$stmt->bindValue(':bairro_nome', $posto->getBairro()->getNome());
+		if ($posto->getTelefone() != null) {
+			$stmt->bindValue(':telefone', $posto->getTelefone());
+		} else {
+			$stmt->bindValue(':telefone', null);
+		}
+		if ($posto->getBandeira() != null) {
+			$stmt->bindValue(':bandeira_nome', $posto->getBandeira()->getNome());
+		} else {
+			$stmt->bindValue(':bandeira_nome', null);			
+		} 
+		if($posto->getBairro() != numfmt_get_locale) {
+			$stmt->bindValue(':bairro_nome', $posto->getBairro()->getNome());
+		} else {
+			$stmt->bindValue(':bairro_nome', null);
+		}
 		return $stmt;
 	}
 
