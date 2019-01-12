@@ -16,6 +16,11 @@ class Posto {
     private $bandeira;
     private $bairro;
 
+    public function __construct() {
+        $this->nomeFantasia = null;
+        $this->telefone = null;
+    }
+
     public function json() {
         if (isset($this->bandeira)) {
             $this->bandeira = $this->bandeira->json();
@@ -26,7 +31,7 @@ class Posto {
         return get_object_vars($this);
     }
 
-    public function getCnpj(): string {
+    public function getCnpj() {
         return $this->cnpj;
     }
 
@@ -34,7 +39,7 @@ class Posto {
         $this->cnpj = $cnpj;
     }
 
-    public function getRazaoSocial(): string {
+    public function getRazaoSocial() {
         return $this->razaoSocial;
     }
 
@@ -42,11 +47,11 @@ class Posto {
         $this->razaoSocial = $razaoSocial;
     }
 
-    public function getNomeFantasia(): string {
+    public function getNomeFantasia() {
         return $this->nomeFantasia;
     }
 
-    public function setNomeFantasia(string $nomeFantasia) {
+    public function setNomeFantasia($nomeFantasia) {
         $this->nomeFantasia = $nomeFantasia;
     }
 
@@ -66,7 +71,7 @@ class Posto {
         $this->longitude = $longitude;
     }
  
-    public function getEndereco(): string {
+    public function getEndereco() {
         return $this->endereco;
     }
  
@@ -74,11 +79,11 @@ class Posto {
         $this->endereco = $endereco;
     }
  
-    public function getTelefone(): string {
+    public function getTelefone() {
         return $this->telefone;
     }
 
-    public function setTelefone(string $telefone) {
+    public function setTelefone($telefone) {
         $this->telefone = $telefone;
     }
 

@@ -136,11 +136,15 @@ class PostoCtrl {
         $posto = new Posto();
         $posto->setCnpj($data["cnpj"]);
         $posto->setRazaoSocial($data["razaoSocial"]);
-        $posto->setNomeFantasia($data["nomeFantasia"]);
+        if (isset($data["nomeFantasia"])) {
+            $posto->setNomeFantasia($data["nomeFantasia"]);
+        }
         $posto->setLatitude($data["latitude"]);
         $posto->setLongitude($data["longitude"]);
         $posto->setEndereco($data["endereco"]);
-        $posto->setTelefone($data["telefone"]);
+        if (isset($data["telefone"])) {
+            $posto->setTelefone($data["telefone"]);
+        }
         if (isset($data['bandeira'])) {
             $bandeiraCtrl = new BandeiraCtrl();
             $bandeira = $bandeiraCtrl->mountBandeira($data['bandeira']);
