@@ -2,22 +2,20 @@
 
 namespace app\preco;
 
-use app\combustivel\Combustivel as Combustivel;
-use app\posto\Posto as Posto;
+use app\postoCombustivel\PostoCombustivel as PostoCombustivel;
+
 
 class Preco{
 	private $momento;
 	private $valor;
-	private $combustivel;
-	private $posto;
+	private $postoCombustivel;
+	
 
 	public function json() {
-        if (isset($this->combustivel)) {
-            $this->combustivel = $this->combustivel->json();
+        if (isset($this->postoCombustivel)) {
+            $this->postoCombustivel = $this->postoCombustivel->json();
         }
-        if (isset($this->posto)) {
-            $this->posto = $this->posto->json();
-        }
+        
         return get_object_vars($this);
     }
 
@@ -37,22 +35,15 @@ class Preco{
         return $this->valor;
     }
 
-    public function setPosto(Posto $posto) {
-        $this->posto = $posto;
+    public function setPostoCombustivel(PostoCombustivel $postoCombustivel) {
+        $this->postoCombustivel = $postoCombustivel;
     }
 
-    public function getPosto(): Posto{
-        return $this->posto;
+    public function getPostoCombustivel(): PostoCombustivel{
+        return $this->postoCombustivel;
     }
 
-    public function getCombustivel(): Combustivel {
-        return $this->combustivel;
-    }
-
-    public function setCombustivel(Combustivel $combustivel {
-        $this->combustivel = $combustivel;
-    }
-
+    
 
 
 
