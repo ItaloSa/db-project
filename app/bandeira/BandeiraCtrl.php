@@ -84,6 +84,29 @@ class BandeiraCtrl {
         }
     }
 
+    public function update($nome, $data) {
+        if ($data == null) {
+            throw new Exception("Data can't be empty");
+        }
+
+        try {
+            $bandeira = $this->mountBandeira($data);
+            $bandeiraDao = new BandeiraDao();
+            $bandeira = $bandeiraDao->update($nome, $bandeira);
+            return $bandeira;
+        } catch (Error $e) {
+            Registry::log()->error($e->getMessage());
+            throw new Exception("Some data is missing");
+        } catch (Exception $e ) {
+            if ($e->getCode() == 404) {
+                throw new Exception($e->getMessage(), $e->getCode());
+            } else {
+                Registry::log()->error($e->getMessage());
+                throw new Exception("Problems with Database");
+            }
+        }
+    }
+
     public function delete($nome) {
         if ($nome == null) {
             throw new Exception("Data can't be empty");
@@ -111,7 +134,9 @@ class BandeiraCtrl {
     public function mountBandeira($data): Bandeira {
         $bandeira = new Bandeira();
         $bandeira->setNome($data["nome"]);
-        $bandeira->setUrl($data["url"]);
+        if (isset($data['url'])) {
+            $bandeira->setUrl($data["url"]);
+        }
         return $bandeira;
     }
 

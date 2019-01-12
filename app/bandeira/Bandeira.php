@@ -18,7 +18,7 @@ class Bandeira {
         $this->nome = $nome;
     }
 
-    public function getUrl(): string {
+    public function getUrl() {
         return $this->url;
     }
 

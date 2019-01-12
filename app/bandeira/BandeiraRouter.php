@@ -15,6 +15,7 @@ class BandeiraRouter {
         $this->app = $app;
         $this->post();
         $this->get();
+        $this->update();
         $this->delete();
     }
 
@@ -51,6 +52,24 @@ class BandeiraRouter {
                 $bandeiraCtrl = new BandeiraCtrl();
                 try {
                     $bandeira = $bandeiraCtrl->get($args['nome']);
+                    return $response->withJson($bandeira->json(), 200);
+                } catch (Exception $e) {
+                    if ($e->getCode() == 404) {
+                        return $response->withJson(["Error" => $e->getMessage()], 404);
+                    } else {
+                        return $response->withJson(["Error" => $e->getMessage()], 400);
+                    }
+                }
+            });
+        });
+    }
+
+    private function update() {
+        $this->app->group('/bandeiras', function () {
+            $this->put('/{nome}', function (Request $request, Response $response, array $args) {
+                $bandeiraCtrl = new BandeiraCtrl();
+                try {
+                    $bandeira = $bandeiraCtrl->update($args['nome'], $request->getParsedBody());
                     return $response->withJson($bandeira->json(), 200);
                 } catch (Exception $e) {
                     if ($e->getCode() == 404) {
